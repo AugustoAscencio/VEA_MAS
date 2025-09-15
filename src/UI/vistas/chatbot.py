@@ -32,13 +32,12 @@ class ChatVer:
         is_user = msg.Amable == "user"
 
         # Usuario: azul vivo, Bot: celeste muy claro (casi blanco)
-        bg_color = "#4FC3F7" if is_user else "#E6F7FF"   # celeste muy claro
+        bg_color = "#4FC3F7" if is_user else "#E6F7FF"
         fg_color = ft.Colors.WHITE if is_user else Tokens.TEXT
         ts_color = ft.Colors.with_opacity(0.7, fg_color)
 
-        # En Flet 0.28.3 limitamos ancho con width en Container
+        # Burbuja adaptativa (sin width fijo)
         cont = ft.Container(
-            width=400,                         # ancho máximo deseado
             content=ft.Column(
                 [
                     ft.Text(
@@ -46,7 +45,7 @@ class ChatVer:
                         size=14,
                         color=fg_color,
                         selectable=True,
-                        no_wrap=False,
+                        no_wrap=False,  # permite saltos de línea
                     ),
                     ft.Text(msg.Tiempo, size=10, color=ts_color),
                 ],
@@ -69,8 +68,14 @@ class ChatVer:
             ),
         )
 
+        # Lo metemos en un contenedor expandible dentro del Row
         return ft.Row(
-            [cont],
+            [
+                ft.Container(
+                    content=cont,
+                    expand=True,   # se adapta al ancho disponible
+                )
+            ],
             alignment=ft.MainAxisAlignment.END if is_user else ft.MainAxisAlignment.START,
         )
 
@@ -187,6 +192,13 @@ class ChatVer:
         )
 
         body = ft.Column([lv, input_box], spacing=10, expand=True)
-        wrap = ft.Container(body, margin=ft.margin.all(12), padding=ft.padding.only(bottom=16), expand=True)
 
-        return ft.Column([wrap, EspaciadorBarra()], spacing=0, expand=True)
+        wrap = ft.Container(
+            body,
+            padding=ft.padding.only(left=8, right=8, bottom=10),  # 👈 aire lateral + 5px abajo
+            expand=True,
+        )
+
+        return ft.Column([wrap], spacing=0, expand=True)
+
+
