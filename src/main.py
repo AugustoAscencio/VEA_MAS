@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import flet as ft
+import os
+
 from estado import Estado_de_la_aplicación, ROUTES
 from typing import Optional
-from dataclasses import dataclass, field
 from UI.componentes import Tokens
 from UI.vistas.inicio import Vista_del_panel
 from UI.vistas.graficos import Vista_de_gráficos
@@ -12,13 +13,13 @@ from UI.vistas.historial import HistoriaVer
 from UI.vistas.prediccion import PredicciónVer
 from UI.vistas.chatbot import ChatVer
 from UI.barra_inferior import Barra_inferior
+from UI.Login import LoginChatbot
 
+USER_DATA_FILE = "user_data.json"
 
 
 # =============================================================================
 class App:
-    
-    
     def __init__(self, page: ft.Page):
         self.page = page
         self.state = Estado_de_la_aplicación()
@@ -35,19 +36,24 @@ class App:
         page.window_bgcolor = Tokens.BG
         page.scroll = ft.ScrollMode.AUTO
 
-        # layout raíz: Column [Expanded(content), BottomBar]
+        # layout raíz
         self.content_container = ft.Container(ref=self.content_ref, expand=True)
         self.nav = Barra_inferior(self)
-        root = ft.Column([self._route_to_view(self.state.active_route), self.nav], spacing=0, expand=True)
-        # importante: reemplazaremos el índice 0 del Column (contenido) en _set_content
+        root = ft.Column(
+            [self._route_to_view(self.state.active_route), self.nav],
+            spacing=0,
+            expand=True,
+        )
         self.root = root
 
-        # una sola view
+        # única view
         page.views.clear()
-        page.views.append(ft.View(route="/", controls=[root], padding=0, bgcolor=Tokens.BG))
+        page.views.append(
+            ft.View(route="/", controls=[root], padding=0, bgcolor=Tokens.BG)
+        )
         page.update()
 
-    # -------- navegación interna (sin page.go) --------
+    # -------- navegación interna --------
     def go(self, route: str):
         if route not in ROUTES:
             route = "/"
@@ -57,7 +63,6 @@ class App:
             self.nav.refresh()
 
     def _set_content(self, control: ft.Control):
-        # Reemplaza el slot 0 del Column root
         self.root.controls[0] = control
         self.page.update()
 
@@ -80,9 +85,24 @@ class App:
 # =============================================================================
 #                               ENTRADA
 # =============================================================================
-
+# =============================================================================
+#                               ENTRADA
+# =============================================================================
 def main(page: ft.Page):
-    App(page)
+    def launch_app():
+        # 👇 Limpiar controles previos y cargar la app principal
+        page.controls.clear()
+        App(page)  # la propia App ya hace page.update()
+
+    # 👇 Verificar si ya existe registro de usuario
+    if not os.path.exists(USER_DATA_FILE):
+        # Mostrar el login tipo chatbot
+        login = LoginChatbot(page, on_finish=launch_app)
+        page.add(login.build())
+    else:
+        # Cargar la app normal directamente
+        App(page)
+
 
 
 if __name__ == "__main__":
