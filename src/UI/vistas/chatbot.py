@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import asyncio, datetime, threading, aiohttp
+import asyncio, datetime, threading, httpx
 import flet as ft
 from asyncio import run_coroutine_threadsafe
 
@@ -9,7 +9,8 @@ from ..componentes import EspaciadorBarra, Rellenar
 from estado import Mensaje
 
 N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
-
+#La de abajo es para testear
+#N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook-test/875be057-eabd-4d46-99e6-0448922119a6"
 # ===== Bucle asincrónico en segundo plano =====
 loop = asyncio.new_event_loop()
 def start_loop(lp: asyncio.AbstractEventLoop):
@@ -119,26 +120,26 @@ class ChatVer:
         self.show_typing(True)
         reply_text = ""
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
+            async with httpx.AsyncClient(timeout=20) as client:
+                resp = await client.post(
                     N8N_WEBHOOK_URL,
                     json={"usuario": "augusto", "chatInput": text},
-                    timeout=20,
-                ) as resp:
-                    raw = await resp.text()
-                    if resp.status == 200:
-                        try:
-                            data = await resp.json()
-                            reply_text = data.get("respuesta", raw) if isinstance(data, dict) else raw
-                        except Exception:
-                            reply_text = raw
-                    else:
-                        reply_text = f"Error {resp.status}: {raw}"
+                )
+                raw = resp.text
+                if resp.status_code == 200:
+                    try:
+                        data = resp.json()
+                        reply_text = data.get("respuesta", raw) if isinstance(data, dict) else raw
+                    except Exception:
+                        reply_text = raw
+                else:
+                    reply_text = f"Error {resp.status_code}: {raw}"
         except Exception as e:
             reply_text = f"Error de conexión: {e}"
 
         self.show_typing(False)
         self.append(Mensaje("bot", reply_text, datetime.datetime.now().strftime("%H:%M")))
+
 
     # ---------------- Envío mensaje -------------
     def _send(self, e: ft.ControlEvent) -> None:

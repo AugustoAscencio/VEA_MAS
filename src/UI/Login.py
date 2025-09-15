@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import asyncio, datetime, threading, aiohttp, json, os, random
+import asyncio, datetime, threading, httpx, json, os, random
 import flet as ft
 from asyncio import run_coroutine_threadsafe
+from pathlib import Path
 
 # ===== Configuración =====
-N8N_WEBHOOK_URL = "###https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
-USER_DATA_FILE = "user_data.json"
-SOUND_FILE = os.path.join("src", "UI", "Sonidos", "sonido_notificacion.mp3")
+N8N_WEBHOOK_URL = "######https://augustocraft02.app.n8n.cloud/webhook/cfc33be7-9e23-4b29-93b4-d1f893213f7e"
+#USER_DATA_FILE = os.path.join(str(Path.home()), "user_data.json")
 
 # ===== Bucle asincrónico en segundo plano =====
 loop = asyncio.new_event_loop()
@@ -18,7 +18,7 @@ threading.Thread(target=start_loop, args=(loop,), daemon=True).start()
 
 
 class LoginChatbot:
-    """Chatbot para registro/inicio de sesión con typing natural y sonido."""
+    """Chatbot para registro/inicio de sesión con typing natural (sin audio)."""
 
     def __init__(self, page: ft.Page, on_finish=None):
         self.page = page
@@ -79,13 +79,10 @@ class LoginChatbot:
         )
 
     def append(self, sender: str, text: str):
-        """Agrega un mensaje del usuario (el bot usa bot_say)."""
         if self.list_ref.current:
             self.list_ref.current.controls.append(self._bubble(sender, text))
             self.list_ref.current.scroll_to(offset=99999, duration=200)
         self.page.update()
-
-
 
     # ---------------- Indicador escribiendo -------------------
     def show_typing(self, show: bool):
@@ -111,34 +108,29 @@ class LoginChatbot:
         self.list_ref.current.scroll_to(offset=99999, duration=200)
         self.page.update()
 
-    async def bot_say(self, text: str, delay: float | None = None):
-        """Simula que el bot escribe y luego muestra el mensaje con sonido."""
+    async def bot_say(self, text: str, delay: float | None = None, first: bool = False):
         if delay is None:
-            delay = random.uniform(1.3, 2.3)  # tiempos más naturales
+            delay = random.uniform(1.3, 2.3)
 
-        # 1) Mostrar escribiendo
         self.show_typing(True)
         await asyncio.sleep(delay)
 
-        # 2) Quitar escribiendo
         self.show_typing(False)
         await asyncio.sleep(0.25)
 
-        # 3) Mostrar mensaje en pantalla
         if self.list_ref.current:
-            self.list_ref.current.controls.append(self._bubble("bot", text))
+            bubble = self._bubble("bot", text)
+            if first and isinstance(bubble, ft.Row):
+                if isinstance(bubble.controls[0], ft.Container):
+                    bubble.controls[0].margin = ft.margin.only(top=40, left=8, right=8, bottom=2)
+            self.list_ref.current.controls.append(bubble)
             self.list_ref.current.scroll_to(offset=99999, duration=200)
-
-        # 4) Sonido justo cuando aparece el mensaje
-        if os.path.exists(SOUND_FILE):
-            self.page.overlay.append(ft.Audio(src=SOUND_FILE, autoplay=True))
 
         self.page.update()
 
-
     # ---------------- Flujo preguntas -----------    
     async def start_chat(self):
-        await self.bot_say("👋 ¡Hola! Soy VE+.")
+        await self.bot_say("👋 ¡Hola! Soy VE+.", first=True)
         await self.bot_say("Te ayudaré a crear tu cuenta en unos pasos sencillos 🙌.")
         await asyncio.sleep(0.8)
         self.ask_next()
@@ -155,49 +147,40 @@ class LoginChatbot:
         else:
             run_coroutine_threadsafe(self.finish_registration(), loop)
 
-
     def handle_answer(self, text: str):
         if self.step >= len(self.questions):
-            return  # seguridad contra error IndexError
+            return
 
         key = self.questions[self.step][1]
         self.answers[key] = text
         self.step += 1
 
-        # Respuesta natural del bot
-        compliments = [
-            "¡Genial 😃!",
-            "Perfecto, gracias 🙏.",
-            "👌 Muy bien.",
-            "🚀 Súper, sigamos.",
-        ]
+        compliments = ["¡Genial 😃!", "Perfecto, gracias 🙏.", "👌 Muy bien.", "🚀 Súper, sigamos."]
 
         async def sequence():
-            # 1) Mostrar cumplido
             await self.bot_say(compliments[self.step % len(compliments)])
-            # 2) Luego la siguiente pregunta
-            await asyncio.sleep(0.6)  # un respiro natural
+            await asyncio.sleep(0.6)
             self.ask_next()
 
         run_coroutine_threadsafe(sequence(), loop)
 
-
     # ---------------- Finalizar registro -------
     async def finish_registration(self):
         await self.bot_say("✅ Registro completado. ¡Bienvenido a VE+!")
-        with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(self.answers, f, ensure_ascii=False, indent=2)
+       # with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
+            #json.dump(self.answers, f, ensure_ascii=False, indent=2)
 
         run_coroutine_threadsafe(self.send_to_n8n(), loop)
 
         if self.on_finish:
-            self.on_finish()  # cargar la App
+            self.on_finish()
 
     async def send_to_n8n(self):
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(N8N_WEBHOOK_URL, json=self.answers, timeout=20) as resp:
-                    await resp.text()
+            async with httpx.AsyncClient(timeout=20) as client:
+                resp = await client.post(N8N_WEBHOOK_URL, json=self.answers)
+                await asyncio.sleep(0)
+                print("Enviado a n8n, status:", resp.status_code)
         except Exception as e:
             print("Error enviando a n8n:", e)
 
@@ -215,19 +198,37 @@ class LoginChatbot:
 
     # ---------------- UI principal --------------    
     def build(self) -> ft.Control:
-        lv = ft.ListView(ref=self.list_ref, controls=[], spacing=12, expand=True,
-                         auto_scroll=True, padding=ft.padding.symmetric(horizontal=6, vertical=10))
+        lv = ft.ListView(
+            ref=self.list_ref,
+            controls=[],
+            spacing=12,
+            expand=True,
+            auto_scroll=True,
+            padding=ft.padding.symmetric(horizontal=10, vertical=10)
+        )
 
         input_box = ft.Row(
             [
-                ft.TextField(ref=self.input_ref, hint_text="Escribe tu respuesta...",
-                             expand=True, border_radius=24, filled=True, bgcolor="#263238",
-                             color=ft.Colors.WHITE, cursor_color=ft.Colors.BLUE,
-                             content_padding=12, on_submit=self._send),
-                ft.IconButton(ft.Icons.SEND_ROUNDED, tooltip="Enviar",
-                              icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE,
-                              style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=20)),
-                              on_click=self._send),
+                ft.TextField(
+                    ref=self.input_ref,
+                    hint_text="Escribe tu respuesta...",
+                    expand=True,
+                    border_radius=24,
+                    filled=True,
+                    bgcolor="#263238",
+                    color=ft.Colors.WHITE,
+                    cursor_color=ft.Colors.BLUE,
+                    content_padding=12,
+                    on_submit=self._send,
+                ),
+                ft.IconButton(
+                    ft.Icons.SEND_ROUNDED,
+                    tooltip="Enviar",
+                    icon_color=ft.Colors.WHITE,
+                    bgcolor=ft.Colors.BLUE,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=20)),
+                    on_click=self._send,
+                ),
             ],
             spacing=8,
         )
