@@ -1,57 +1,140 @@
+# UI/Login.py
 from __future__ import annotations
 
-import asyncio, datetime, threading, httpx, json, os, random
-import flet as ft
+"""
+Login.py - Chatbot de login/registro para VE+
+
+Características:
+ - Flujo de login y registro completamente controlado por máquina de estados.
+ - Validaciones estrictas: edad, género, zona, internet, dispositivo, condición de salud.
+ - Password: el usuario VE+ ve la contraseña en claro mientras la escribe; en el chat aparece
+   enmascarada (****) cuando se muestra como mensaje.
+ - Evita el bug "Escribiendo..." atascado mediante lock y uso correcto de coroutines.
+ - Construcción del username: PrimerNombre_PrimerApellido.
+ - Llamadas a dos endpoints (LOGIN_N8N_URL y REGISTER_N8N_URL) como placeholders.
+ - Lógica robusta de reintentos y mensajes empáticos.
+ - Integración con `on_finish()` (callback desde main.py) para continuar a la app principal.
+"""
+
+import asyncio
+import datetime
+import threading
+import random
+import httpx
+import json
+import os
+import traceback
 from asyncio import run_coroutine_threadsafe
 from pathlib import Path
+import flet as ft
+from typing import Callable, Any, Optional
 
-# ===== Configuración =====
-N8N_WEBHOOK_URL = "######https://augustocraft02.app.n8n.cloud/webhook/cfc33be7-9e23-4b29-93b4-d1f893213f7e"
-#USER_DATA_FILE = os.path.join(str(Path.home()), "user_data.json")
+# ====== CONFIG - Cambia estas URLs por tus endpoints n8n reales ======
+LOGIN_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/b4966ffa-b9aa-49b8-b1a4-54cea285f83f"       # <- reemplaza por tu URL de validación
+REGISTER_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/cbe10780-7e24-4118-8820-8c30cdc8c86e" # <- reemplaza por tu URL de registro
 
-# ===== Bucle asincrónico en segundo plano =====
+# ======================================================================
+# Simple logging helper (puedes redirigir a logger real si lo deseas)
+# ======================================================================
+def log_debug(msg: str):
+    print(f"[DEBUG {datetime.datetime.now().isoformat()}] {msg}")
+
+# ======================================================================
+# Creamos un event loop dedicado en background para coroutines del bot
+# ======================================================================
 loop = asyncio.new_event_loop()
-def start_loop(lp: asyncio.AbstractEventLoop):
+
+
+def _start_background_loop(lp: asyncio.AbstractEventLoop):
     asyncio.set_event_loop(lp)
     lp.run_forever()
-threading.Thread(target=start_loop, args=(loop,), daemon=True).start()
 
 
+_bg_thread = threading.Thread(target=_start_background_loop, args=(loop,), daemon=True)
+_bg_thread.start()
+
+# ======================================================================
+# Utilities async / sync helpers
+# ======================================================================
+async def _sleep_and_call(delay: float, callable_obj: Callable[..., Any], *args, **kwargs):
+    """
+    Espera `delay` segundos (async) y luego ejecuta callable_obj.
+    Si callable_obj es coroutine, lo await; si es función normal lo llama.
+    Esto evita pasar `asyncio.sleep` a run_coroutine_threadsafe directamente.
+    """
+    await asyncio.sleep(delay)
+    if asyncio.iscoroutinefunction(callable_obj):
+        await callable_obj(*args, **kwargs)
+    else:
+        callable_obj(*args, **kwargs)
+
+
+async def _maybe_await(fn: Callable[..., Any], *args, **kwargs):
+    """Si fn es coroutine function, lo await; si es sync, lo llama."""
+    if asyncio.iscoroutinefunction(fn):
+        return await fn(*args, **kwargs)
+    else:
+        return fn(*args, **kwargs)
+
+
+def safe_run_coroutine(coro):
+    """
+    Wrapper pequeño para enviar coroutines al loop de fondo y obtener el Future.
+    Asegura que el argumento sea una coroutine object (no una función normal).
+    """
+    if asyncio.iscoroutine(coro):
+        return run_coroutine_threadsafe(coro, loop)
+    else:
+        # intentar convertir si nos pasaron una coroutine function llamándola sin args
+        raise TypeError("safe_run_coroutine espera un objeto coroutine (ej: mi_coroutine(...)).")
+
+
+# ======================================================================
+# LoginChatbot class
+# ======================================================================
 class LoginChatbot:
-    """Chatbot para registro/inicio de sesión con typing natural (sin audio)."""
+    """
+    Chatbot para login/registro con Flet.
 
-    def __init__(self, page: ft.Page, on_finish=None):
+    Integración con Main:
+      - main.py crea LoginChatbot(page, on_finish=launch_app)
+      - on_finish se llamará cuando login/registro sean exitosos.
+    """
+
+    def __init__(self, page: ft.Page, on_finish: Optional[Callable[[], Any]] = None):
         self.page = page
         self.on_finish = on_finish
+
+        # UI refs
         self.list_ref: ft.Ref[ft.ListView] = ft.Ref[ft.ListView]()
         self.input_ref: ft.Ref[ft.TextField] = ft.Ref[ft.TextField]()
         self.typing_ref: ft.Ref[ft.Container] = ft.Ref[ft.Container]()
-        self.messages: list[dict] = []
-        self.answers: dict = {}
-        self.step = 0
 
-        # Conversación más natural
-        self.questions = [
-            ("¡Hey! Bienvenido 😃, dime, ¿cómo te llamas?", "nombre"),
-            ("Genial, {nombre}! 🙌 ¿Y qué edad tienes?", "edad"),
-            ("Perfecto, gracias. Ahora dime, ¿cómo te identificas? (Masculino / Femenino / Otro)", "genero"),
-            ("Interesante 👍. ¿En qué zona vives? (Urbano / Periurbano / Rural)", "zona"),
-            ("Cuéntame, ¿tienes alguna condición de salud que debamos monitorear? (Sí crónica / Sí temporal / No)", "condicion"),
-            ("Ok, entendido. ¿Cómo es tu acceso a Internet? (Siempre / Mayormente / Ocasional / Casi nunca)", "internet"),
-            ("Y dime, ¿qué dispositivo usas más seguido? (Android / iPhone / Básico / Tableta / Otro)", "dispositivo"),
-            ("Perfecto 👌. Solo falta que crees una contraseña para tu cuenta 🔑", "password"),
-        ]
+        # estado
+        self.state: str = "initial"
+        self.answers: dict[str, Any] = {}
+        self.pending_login: dict[str, str] = {}
+        self._speak_lock = asyncio.Lock()
+        self._last_bot_task = None
 
-        # Iniciar con bienvenida natural
+        # opciones válidas (normalizadas)
+        self.valid_generos = {"femenino", "masculino", "otro", "prefiero no decir", "no binario", "mujer", "hombre"}
+        self.valid_zonas = {"urbano", "periurbano", "rural"}
+        self.valid_internet = {"siempre", "mayormente", "ocasionalmente", "casi nunca", "ocasional", "mayormente (con intermitencias)"}
+        self.valid_dispositivos = {"android", "iphone", "basico", "tableta", "otro", "ios", "ipad"}
+
+        # Inicia el chat en background
         run_coroutine_threadsafe(self.start_chat(), loop)
 
-    # ---------------- Utilidades UI ------------------
+    # ---------------- UI helpers ----------------
     def _bubble(self, sender: str, text: str) -> ft.Row:
-        is_user = sender == "user"
+        """
+        Construye un bubble simple para el ListView del chat.
+        """
+        is_user = (sender == "user")
         bg_color = "#4FC3F7" if is_user else "#E6F7FF"
         fg_color = ft.Colors.WHITE if is_user else ft.Colors.BLACK
         ts_color = ft.Colors.with_opacity(0.7, fg_color)
-
         cont = ft.Container(
             content=ft.Column(
                 [
@@ -64,171 +147,488 @@ class LoginChatbot:
             bgcolor=bg_color,
             padding=ft.padding.all(12),
             border_radius=18,
-            margin=ft.margin.only(
-                left=60 if is_user else 8,
-                right=8 if is_user else 60,
-                top=2,
-                bottom=2,
-            ),
+            margin=ft.margin.only(left=60 if is_user else 8, right=8 if is_user else 60, top=2, bottom=2),
             shadow=ft.BoxShadow(blur_radius=6, spread_radius=1, color=ft.Colors.with_opacity(0.15, "black")),
         )
-
-        return ft.Row(
-            [ft.Container(content=cont, expand=True)],
-            alignment=ft.MainAxisAlignment.END if is_user else ft.MainAxisAlignment.START,
-        )
+        return ft.Row([ft.Container(content=cont, expand=True)], alignment=ft.MainAxisAlignment.END if is_user else ft.MainAxisAlignment.START)
 
     def append(self, sender: str, text: str):
+        """
+        Añade un mensaje al ListView y fuerza update de la página.
+        """
         if self.list_ref.current:
             self.list_ref.current.controls.append(self._bubble(sender, text))
             self.list_ref.current.scroll_to(offset=99999, duration=200)
         self.page.update()
 
-    # ---------------- Indicador escribiendo -------------------
+    # ---------------- typing indicator ----------------
     def show_typing(self, show: bool):
+        """
+        Muestra o quita el indicador 'Escribiendo...'.
+        Protegemos con comprobaciones para no añadir duplicados.
+        """
         if not self.list_ref.current:
             return
         if show:
-            bubble = ft.Container(
-                ref=self.typing_ref,
-                content=ft.Row(
-                    [ft.ProgressRing(width=16, height=16, stroke_width=2, color=ft.Colors.BLUE),
-                     ft.Text("Escribiendo...", size=12, color=ft.Colors.GREY)],
-                    spacing=8,
-                ),
-                padding=ft.padding.all(10),
-                border_radius=16,
-                bgcolor=ft.Colors.BLUE_GREY_800,
-                margin=ft.margin.only(right=120, left=8),
-            )
-            self.list_ref.current.controls.append(bubble)
+            if not (self.typing_ref.current and self.typing_ref.current in self.list_ref.current.controls):
+                bubble = ft.Container(
+                    ref=self.typing_ref,
+                    content=ft.Row([ft.ProgressRing(width=16, height=16, stroke_width=2, color=ft.Colors.BLUE),
+                                    ft.Text("Escribiendo...", size=12, color=ft.Colors.GREY)], spacing=8),
+                    padding=ft.padding.all(10),
+                    border_radius=16,
+                    bgcolor=ft.Colors.BLUE_GREY_800,
+                    margin=ft.margin.only(right=120, left=8),
+                )
+                self.list_ref.current.controls.append(bubble)
         else:
             if self.typing_ref.current and self.typing_ref.current in self.list_ref.current.controls:
-                self.list_ref.current.controls.remove(self.typing_ref.current)
+                try:
+                    self.list_ref.current.controls.remove(self.typing_ref.current)
+                except Exception:
+                    # fallback: eliminar todos los que parezcan typing_ref
+                    self.list_ref.current.controls = [c for c in self.list_ref.current.controls if c is not self.typing_ref.current]
         self.list_ref.current.scroll_to(offset=99999, duration=200)
         self.page.update()
 
     async def bot_say(self, text: str, delay: float | None = None, first: bool = False):
-        if delay is None:
-            delay = random.uniform(1.3, 2.3)
+        """
+        Secuencia segura para que el bot "escriba" y luego muestre el mensaje.
+        Usamos un lock para evitar solapamientos y para asegurarnos que 'Escribiendo...'
+        siempre sea limpiado correctamente.
+        """
+        async with self._speak_lock:
+            if delay is None:
+                delay = random.uniform(1.1, 2.0)
+            # mostrar typing
+            self.show_typing(True)
+            await asyncio.sleep(delay)
+            # quitar typing
+            self.show_typing(False)
+            # breve pausa para lograr efecto natural
+            await asyncio.sleep(0.18)
+            # agregar mensaje
+            if self.list_ref.current:
+                bubble = self._bubble("bot", text)
+                if first and isinstance(bubble, ft.Row):
+                    if isinstance(bubble.controls[0], ft.Container):
+                        bubble.controls[0].margin = ft.margin.only(top=36, left=8, right=8, bottom=2)
+                self.list_ref.current.controls.append(bubble)
+                self.list_ref.current.scroll_to(offset=99999, duration=200)
+            self.page.update()
 
-        self.show_typing(True)
-        await asyncio.sleep(delay)
-
-        self.show_typing(False)
-        await asyncio.sleep(0.25)
-
-        if self.list_ref.current:
-            bubble = self._bubble("bot", text)
-            if first and isinstance(bubble, ft.Row):
-                if isinstance(bubble.controls[0], ft.Container):
-                    bubble.controls[0].margin = ft.margin.only(top=40, left=8, right=8, bottom=2)
-            self.list_ref.current.controls.append(bubble)
-            self.list_ref.current.scroll_to(offset=99999, duration=200)
-
-        self.page.update()
-
-    # ---------------- Flujo preguntas -----------    
+    # ---------------- flujo principal ----------------
     async def start_chat(self):
-        await self.bot_say("👋 ¡Hola! Soy VE+.", first=True)
-        await self.bot_say("Te ayudaré a crear tu cuenta en unos pasos sencillos 🙌.")
-        await asyncio.sleep(0.8)
-        self.ask_next()
+        """
+        Arranca la conversación: saludo y primera pregunta.
+        """
+        await self.bot_say("👋 ¡Hola! Soy VE+, tu asistente de registro e inicio de sesión.", first=True)
+        await self.bot_say("Antes de comenzar, por favor dime si ya tienes una cuenta con nosotros. Responde: Sí o No.")
+        self.state = "have_account"
 
-    def ask_next(self):
-        if self.step < len(self.questions):
-            q, key = self.questions[self.step]
-            text = q.format(**self.answers)
+    # ----------------- ASK helpers (sincrónicos) -----------------
+    # Cada helper cambia el estado y lanza un bot_say de forma segura (pasan coroutine a run_coroutine_threadsafe).
+    def ask_login_username(self):
+        self.state = "login_username"
+        run_coroutine_threadsafe(self.bot_say("Perfecto — por favor ingresa tu nombre de usuario (ej: Augusto_Ascencio)."), loop)
 
-            async def ask():
-                await self.bot_say(text)
+    def ask_login_password(self):
+        self.state = "login_password"
+        # No activamos modo password en el TextField: el usuario ve lo que escribe.
+        run_coroutine_threadsafe(self.bot_say("Ahora ingresa tu contraseña (se mostrará enmascarada en el chat)."), loop)
 
-            run_coroutine_threadsafe(ask(), loop)
-        else:
-            run_coroutine_threadsafe(self.finish_registration(), loop)
+    def ask_registration_first_name(self):
+        self.state = "reg_first_name"
+        run_coroutine_threadsafe(self.bot_say("Genial. ¿Cuál es tu primer nombre?"), loop)
 
-    def handle_answer(self, text: str):
-        if self.step >= len(self.questions):
+    def ask_registration_last_name(self):
+        self.state = "reg_last_name"
+        run_coroutine_threadsafe(self.bot_say("Perfecto. ¿Cuál es tu primer apellido?"), loop)
+
+    def ask_registration_age(self):
+        self.state = "reg_edad"
+        run_coroutine_threadsafe(self.bot_say(f"Encantado, {self.answers.get('first_name','')}. ¿Cuántos años tienes? (ej: 30)"), loop)
+
+    def ask_registration_genero(self):
+        self.state = "reg_genero"
+        run_coroutine_threadsafe(self.bot_say("¿Cuál es tu género? (Femenino / Masculino / Otro)"), loop)
+
+    def ask_registration_zona(self):
+        self.state = "reg_zona"
+        run_coroutine_threadsafe(self.bot_say("¿En qué zona vives? (Urbano / Periurbano / Rural)"), loop)
+
+    def ask_registration_condicion(self):
+        self.state = "reg_condicion"
+        run_coroutine_threadsafe(self.bot_say("¿Tienes alguna condición de salud que deba monitorearse? Responde: 'Sí crónica', 'Sí temporal' o 'No'."), loop)
+
+    def ask_registration_condicion_detalle(self):
+        self.state = "reg_condicion_detalle"
+        run_coroutine_threadsafe(self.bot_say("Entiendo. ¿Podrías especificar cuál(es)? (ej: diabetes, hipertensión, asma)"), loop)
+
+    def ask_registration_internet(self):
+        self.state = "reg_internet"
+        run_coroutine_threadsafe(self.bot_say("¿Cuál es tu nivel de acceso a Internet? (Siempre / Mayormente / Ocasionalmente / Casi nunca)"), loop)
+
+    def ask_registration_dispositivo(self):
+        self.state = "reg_dispositivo"
+        run_coroutine_threadsafe(self.bot_say("¿Qué dispositivo usas más seguido? (Android / iPhone / Básico / Tableta / Otro)"), loop)
+
+    def ask_registration_password(self):
+        # No activar modo password del TextField (usuario lo ve al escribir).
+        self.state = "reg_password"
+        run_coroutine_threadsafe(self.bot_say("Por último, crea una contraseña para tu cuenta 🔑 (se mostrará enmascarada en el chat)."), loop)
+
+    # ----------------- normalización y validación -----------------
+    def _normalize(self, text: str) -> str:
+        return text.strip().lower()
+
+    # ----------------- procesamiento de la entrada del usuario -----------------
+    def process_input(self, text: str):
+        """
+        Lógica que determina qué hacer con el texto del usuario en función del estado.
+        Nota: esta función es síncrona (no coroutine) y lanza coroutines al loop de fondo cuando es necesario.
+        """
+        try:
+            txt = self._normalize(text)
+            # ------------- Estados -------------
+            if self.state == "have_account":
+                if txt in {"si", "sí", "s"}:
+                    self.ask_login_username()
+                elif txt in {"no", "n"}:
+                    self.answers.clear()
+                    self.ask_registration_first_name()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Por favor responde únicamente 'Sí' o 'No'."), loop)
+                return
+
+            # ---- LOGIN FLOW ----
+            if self.state == "login_username":
+                # almacenamos tal cual (puedes normalizar a lower si lo prefieres)
+                self.pending_login["username"] = text.strip()
+                self.ask_login_password()
+                return
+
+            if self.state == "login_password":
+                self.pending_login["password"] = text
+                # lanzamos validación en background; attempt_login es coroutine
+                run_coroutine_threadsafe(self.attempt_login(self.pending_login["username"], self.pending_login["password"]), loop)
+                self.state = "login_wait"
+                return
+
+            # ---- REGISTER FLOW ----
+            if self.state == "reg_first_name":
+                candidate = text.strip()
+                if len(candidate) < 2:
+                    run_coroutine_threadsafe(self.bot_say("Por favor escribe al menos 2 letras para tu nombre."), loop)
+                    return
+                self.answers["first_name"] = candidate.strip().capitalize()
+                self.ask_registration_last_name()
+                return
+
+            if self.state == "reg_last_name":
+                candidate = text.strip()
+                if len(candidate) < 2:
+                    run_coroutine_threadsafe(self.bot_say("Por favor escribe al menos 2 letras para tu apellido."), loop)
+                    return
+                self.answers["last_name"] = candidate.strip().capitalize()
+
+                # Construir username: PrimerNombre_PrimerApellido
+                first_clean = self.answers.get("first_name", "").replace(" ", "_")
+                last_clean = self.answers.get("last_name", "").replace(" ", "_")
+                username_combined = f"{first_clean}_{last_clean}"
+                self.answers["username"] = username_combined
+
+                run_coroutine_threadsafe(self.bot_say(f"Perfecto — tu nombre de usuario sugerido será: {username_combined}"), loop)
+                # pausa breve y seguir con edad (usar coroutine para pausar + llamar)
+                run_coroutine_threadsafe(_sleep_and_call(0.45, self.ask_registration_age), loop)
+                return
+
+            if self.state == "reg_edad":
+                try:
+                    edad_val = int(text.strip())
+                    if not (5 <= edad_val <= 120):
+                        raise ValueError()
+                    self.answers["edad"] = edad_val
+                    self.ask_registration_genero()
+                except Exception:
+                    run_coroutine_threadsafe(self.bot_say("Ingresa tu edad en números (ej: 30). Debe estar entre 5 y 120."), loop)
+                return
+
+            if self.state == "reg_genero":
+                if txt in {"femenino", "mujer"}:
+                    self.answers["genero"] = "Femenino"
+                    self.ask_registration_zona()
+                elif txt in {"masculino", "hombre"}:
+                    self.answers["genero"] = "Masculino"
+                    self.ask_registration_zona()
+                elif txt in {"otro", "prefiero no decir", "no binario"}:
+                    self.answers["genero"] = text.strip()
+                    self.ask_registration_zona()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Respuesta no válida. Por favor escribe: Femenino, Masculino u Otro."), loop)
+                return
+
+            if self.state == "reg_zona":
+                if txt in {"urbano", "periurbano", "rural"}:
+                    self.answers["zona"] = text.strip().capitalize()
+                    self.ask_registration_condicion()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Por favor elige: Urbano / Periurbano / Rural."), loop)
+                return
+
+            if self.state == "reg_condicion":
+                if txt.startswith("si") or txt.startswith("sí"):
+                    if "cron" in txt:
+                        self.answers["condicion"] = "Sí - crónica"
+                        self.ask_registration_condicion_detalle()
+                    elif "temp" in txt or "temporal" in txt:
+                        self.answers["condicion"] = "Sí - temporal"
+                        self.ask_registration_condicion_detalle()
+                    else:
+                        run_coroutine_threadsafe(self.bot_say("¿Es crónica o temporal? Responde: 'Sí crónica' o 'Sí temporal'."), loop)
+                elif txt in {"no", "n"}:
+                    self.answers["condicion"] = "No"
+                    self.ask_registration_internet()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Respuesta no válida. Escribe: 'Sí crónica', 'Sí temporal' o 'No'."), loop)
+                return
+
+            if self.state == "reg_condicion_detalle":
+                detalle = text.strip()
+                if len(detalle) < 2:
+                    run_coroutine_threadsafe(self.bot_say("Por favor especifica brevemente tu condición (ej: diabetes, hipertensión)."), loop)
+                else:
+                    self.answers["condicion_detalle"] = detalle
+                    # empatía
+                    run_coroutine_threadsafe(self.bot_say(f"Entiendo — {detalle}. Gracias por compartir, lo tendré en cuenta en futuras recomendaciones."), loop)
+                    # pequeña pausa y continuar a internet
+                    run_coroutine_threadsafe(_sleep_and_call(0.35, self.ask_registration_internet), loop)
+                return
+
+            if self.state == "reg_internet":
+                if txt in {"siempre", "si", "siempre (wifi o datos)"}:
+                    self.answers["internet"] = "Siempre"
+                    self.ask_registration_dispositivo()
+                elif txt in {"mayormente", "mayormente (con intermitencias)"}:
+                    self.answers["internet"] = "Mayormente"
+                    self.ask_registration_dispositivo()
+                elif txt in {"ocasionalmente", "ocasional", "ocasionalmente (con intermitencias)"}:
+                    self.answers["internet"] = "Ocasionalmente"
+                    self.ask_registration_dispositivo()
+                elif txt in {"casi nunca"}:
+                    self.answers["internet"] = "Casi nunca"
+                    self.ask_registration_dispositivo()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Por favor elige: Siempre / Mayormente / Ocasionalmente / Casi nunca."), loop)
+                return
+
+            if self.state == "reg_dispositivo":
+                if "android" in txt:
+                    self.answers["dispositivo"] = "Android"
+                    self.ask_registration_password()
+                elif "iphone" in txt or "ios" in txt:
+                    self.answers["dispositivo"] = "iPhone"
+                    self.ask_registration_password()
+                elif "bas" in txt or "basico" in txt:
+                    self.answers["dispositivo"] = "Básico"
+                    self.ask_registration_password()
+                elif "table" in txt or "tablet" in txt:
+                    self.answers["dispositivo"] = "Tableta"
+                    self.ask_registration_password()
+                elif "otro" in txt:
+                    self.answers["dispositivo"] = text.strip()
+                    self.ask_registration_password()
+                else:
+                    run_coroutine_threadsafe(self.bot_say("Respuesta no válida. Escribe Android / iPhone / Básico / Tableta / Otro."), loop)
+                return
+
+            if self.state == "reg_password":
+                pw_val = text.strip()
+                if len(pw_val) < 4:
+                    run_coroutine_threadsafe(self.bot_say("La contraseña debe tener al menos 4 caracteres. Intenta otra."), loop)
+                else:
+                    # Guardamos contraseña en memory y enviamos a registro
+                    self.answers["password"] = pw_val
+                    run_coroutine_threadsafe(self.bot_say("Perfecto. Envío tus datos y te confirmo."), loop)
+                    run_coroutine_threadsafe(self.complete_registration(), loop)
+                return
+
+            # si estamos esperando login response
+            if self.state == "login_wait":
+                run_coroutine_threadsafe(self.bot_say("Todavía estoy validando tus credenciales, por favor espera un momento."), loop)
+                return
+
+            # fallback: reiniciar
+            run_coroutine_threadsafe(self.bot_say("No entendí eso. ¿Tienes cuenta? Responde Sí o No."), loop)
+            self.state = "have_account"
+
+        except Exception as exc:
+            # capturamos excepciones para evitar que el hilo principal muera
+            log_debug(f"Error en process_input: {exc}\n{traceback.format_exc()}")
+            run_coroutine_threadsafe(self.bot_say("Ocurrió un error interno procesando tu mensaje. Intentemos de nuevo. ¿Tienes cuenta? Responde Sí o No."), loop)
+            self.state = "have_account"
+
+    # ---------------- acciones async con n8n ----------------
+    async def attempt_login(self, username: str, password: str):
+        """
+        Envia credenciales a LOGIN_N8N_URL. Se espera JSON {'ok': True/False, 'message': ...}
+        Si el endpoint devuelve otro formato, ajusta el parseo.
+        """
+        try:
+            self.state = "login_wait"
+            await self.bot_say("Validando credenciales, espera un momento...")
+            async with httpx.AsyncClient(timeout=15) as client:
+                payload = {"action": "login", "username": username, "password": password}
+                try:
+                    resp = await client.post(LOGIN_N8N_URL, json=payload)
+                except Exception as e:
+                    await self.bot_say(f"Error conectando al servidor de autenticación: {e}")
+                    self.state = "have_account"
+                    await asyncio.sleep(0.3)
+                    await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
+                    return
+
+                try:
+                    data = resp.json()
+                except Exception:
+                    # No JSON: asumimos ok por status 200/201 o falso
+                    data = {"ok": resp.status_code in (200, 201), "message": resp.text}
+
+            if data.get("ok"):
+                await self.bot_say("✔️ Inicio de sesión correcto. ¡Bienvenido de nuevo!")
+                self.state = "logged_in"
+                await asyncio.sleep(0.45)
+                # llamar on_finish - si es coroutine lo await, si no lo llama en sync
+                if self.on_finish:
+                    if asyncio.iscoroutinefunction(self.on_finish):
+                        await self.on_finish()
+                    else:
+                        try:
+                            self.on_finish()
+                        except Exception as e:
+                            log_debug(f"Error calling on_finish: {e}")
+                return
+            else:
+                msg = data.get("message") or "Usuario o contraseña incorrectos."
+                await self.bot_say(f"❌ {msg} Por favor intenta nuevamente.")
+                self.state = "have_account"
+                await asyncio.sleep(0.3)
+                await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
+                return
+        except Exception as e:
+            await self.bot_say(f"Error validando credenciales: {e}")
+            self.state = "have_account"
+            await asyncio.sleep(0.3)
+            await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
             return
 
-        key = self.questions[self.step][1]
-        self.answers[key] = text
-        self.step += 1
-
-        compliments = ["¡Genial 😃!", "Perfecto, gracias 🙏.", "👌 Muy bien.", "🚀 Súper, sigamos."]
-
-        async def sequence():
-            await self.bot_say(compliments[self.step % len(compliments)])
-            await asyncio.sleep(0.6)
-            self.ask_next()
-
-        run_coroutine_threadsafe(sequence(), loop)
-
-    # ---------------- Finalizar registro -------
-    async def finish_registration(self):
-        await self.bot_say("✅ Registro completado. ¡Bienvenido a VE+!")
-       # with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
-            #json.dump(self.answers, f, ensure_ascii=False, indent=2)
-
-        run_coroutine_threadsafe(self.send_to_n8n(), loop)
-
-        if self.on_finish:
-            self.on_finish()
-
-    async def send_to_n8n(self):
+    async def complete_registration(self):
+        """
+        Envia los datos de self.answers a REGISTER_N8N_URL.
+        payload: { action: "register", data: self.answers }
+        """
         try:
+            await self.bot_say("Enviando tus datos de registro... espera un momento.")
             async with httpx.AsyncClient(timeout=20) as client:
-                resp = await client.post(N8N_WEBHOOK_URL, json=self.answers)
-                await asyncio.sleep(0)
-                print("Enviado a n8n, status:", resp.status_code)
-        except Exception as e:
-            print("Error enviando a n8n:", e)
+                payload = {"action": "register", "data": self.answers}
+                try:
+                    resp = await client.post(REGISTER_N8N_URL, json=payload)
+                except Exception as e:
+                    await self.bot_say(f"Error conectando con el servidor de registro: {e}")
+                    self.state = "have_account"
+                    await asyncio.sleep(0.3)
+                    await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
+                    return
 
-    # ---------------- Enviar mensaje -----------    
+                try:
+                    data = resp.json()
+                except Exception:
+                    data = {"ok": resp.status_code in (200, 201), "message": resp.text}
+
+            if data.get("ok", True):
+                await self.bot_say("✅ Registro completado. Gracias por unirte a VE+.")
+                # Mostrar al usuario brevemente su usuario sugerido y recordarle no compartir contraseña
+                await self.bot_say(f"Tu nombre de usuario es: {self.answers.get('username', '(no disponible)')}")
+                # No mostramos la contraseña real en el chat; mostramos asteriscos
+                masked_pw = "*" * len(self.answers.get("password", ""))
+                await self.bot_say(f"Contraseña: {masked_pw} (se ha enviado de forma segura).")
+                await asyncio.sleep(0.6)
+                # Llamar on_finish para que main.py muestre la app principal
+                if self.on_finish:
+                    if asyncio.iscoroutinefunction(self.on_finish):
+                        await self.on_finish()
+                    else:
+                        try:
+                            self.on_finish()
+                        except Exception as e:
+                            log_debug(f"Error calling on_finish after register: {e}")
+                return
+            else:
+                msg = data.get("message", "Hubo un problema en el registro.")
+                await self.bot_say(f"❌ {msg} - Intentemos de nuevo.")
+                self.state = "have_account"
+                await asyncio.sleep(0.3)
+                await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
+                return
+        except Exception as e:
+            await self.bot_say(f"Error al enviar registro: {e}")
+            self.state = "have_account"
+            await asyncio.sleep(0.3)
+            await self.bot_say("¿Tienes una cuenta? Responde Sí o No.")
+            return
+
+    # ---------------- envío de mensaje del usuario (handler) ----------------
     def _send(self, e: ft.ControlEvent):
+        """
+        Evento asociado al botón envíar o al submit del TextField.
+        - Muestra el mensaje del usuario (enmascara si estamos en password states)
+        - Limpia el TextField
+        - Llama a process_input con el valor real (no enmascarado)
+        """
         if not self.input_ref.current:
             return
         text = (self.input_ref.current.value or "").strip()
         if not text:
             return
 
-        self.input_ref.current.value = ""
-        self.append("user", text)
-        self.handle_answer(text)
+        # mostrar masked en la UI únicamente si estamos en estados de password
+        display_text = text
+        if self.state in {"reg_password", "login_password"}:
+            display_text = "*" * len(text)
 
-    # ---------------- UI principal --------------    
+        # limpiar campo
+        self.input_ref.current.value = ""
+        # append del usuario
+        self.append("user", display_text)
+        # procesar valor real
+        try:
+            self.process_input(text)
+        except Exception as e:
+            log_debug(f"Error en process_input (desde _send): {e}\n{traceback.format_exc()}")
+            run_coroutine_threadsafe(self.bot_say("Ocurrió un error procesando tu mensaje. Intenta nuevamente."), loop)
+
+    # ---------------- construcción UI ----------------
     def build(self) -> ft.Control:
-        lv = ft.ListView(
-            ref=self.list_ref,
-            controls=[],
-            spacing=12,
-            expand=True,
-            auto_scroll=True,
-            padding=ft.padding.symmetric(horizontal=10, vertical=10)
-        )
+        """
+        Construye y devuelve el control principal del Chatbot.
+        - Ajusta padding vertical para que el primer mensaje no esté pegado.
+        """
+        lv = ft.ListView(ref=self.list_ref, controls=[], spacing=12, expand=True, auto_scroll=True,
+                         padding=ft.padding.symmetric(horizontal=10, vertical=16))
 
         input_box = ft.Row(
             [
-                ft.TextField(
-                    ref=self.input_ref,
-                    hint_text="Escribe tu respuesta...",
-                    expand=True,
-                    border_radius=24,
-                    filled=True,
-                    bgcolor="#263238",
-                    color=ft.Colors.WHITE,
-                    cursor_color=ft.Colors.BLUE,
-                    content_padding=12,
-                    on_submit=self._send,
-                ),
-                ft.IconButton(
-                    ft.Icons.SEND_ROUNDED,
-                    tooltip="Enviar",
-                    icon_color=ft.Colors.WHITE,
-                    bgcolor=ft.Colors.BLUE,
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=20)),
-                    on_click=self._send,
-                ),
+                ft.TextField(ref=self.input_ref, hint_text="Escribe tu respuesta...",
+                             expand=True, border_radius=24, filled=True,
+                             bgcolor="#263238", color=ft.Colors.WHITE,
+                             cursor_color=ft.Colors.BLUE, content_padding=12,
+                             on_submit=self._send,
+                             password=False,  # ver en claro mientras escribe
+                             autofocus=True,
+                             ),
+                ft.IconButton(ft.Icons.SEND_ROUNDED, tooltip="Enviar", icon_color=ft.Colors.WHITE,
+                              bgcolor=ft.Colors.BLUE, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=20)),
+                              on_click=self._send),
             ],
             spacing=8,
         )
@@ -236,3 +636,4 @@ class LoginChatbot:
         body = ft.Column([lv, input_box], spacing=10, expand=True)
         wrap = ft.Container(body, padding=ft.padding.only(left=8, right=8, bottom=10), expand=True)
         return ft.Column([wrap], spacing=0, expand=True)
+

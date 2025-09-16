@@ -94,14 +94,10 @@ def main(page: ft.Page):
         page.controls.clear()
         App(page)  # la propia App ya hace page.update()
 
-    # 👇 Verificar si ya existe registro de usuario
-    if not os.path.exists(USER_DATA_FILE):
-        # Mostrar el login tipo chatbot
-        login = LoginChatbot(page, on_finish=launch_app)
-        page.add(login.build())
-    else:
-        # Cargar la app normal directamente
-        App(page)
+    # 👇 Siempre arrancar con el login tipo chatbot
+    login = LoginChatbot(page, on_finish=launch_app)
+    page.add(login.build())
+
 
 
 
