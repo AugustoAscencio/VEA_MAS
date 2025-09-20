@@ -23,16 +23,35 @@ class Barra_inferior(ft.Container):
             border=ft.border.only(top=ft.border.BorderSide(1, Tokens.BORDER)),
         )
 
-    def _btn(self, *, icon: str, label: str, route: str) -> ft.Container:
+    # def _btn(self, *, icon: str, label: str, route: str) -> ft.Container:
+    #     sel = self.app.state.active_route == route
+    #     color = Tokens.PRIMARY if sel else Tokens.MUTED
+    #     btn = ft.Container(
+    #         content=ft.Column([ft.Icon(icon, size=22, color=color), ft.Text(label, size=10, color=color)], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+    #         expand=True,
+    #         on_click=lambda e, r=route: self.app.go(r),
+    #     )
+    #     self._buttons.append(btn)
+    #     return btn
+    def _btn(self, *, icon: str, label: str, route: str, visible: bool = True) -> ft.Container:
         sel = self.app.state.active_route == route
         color = Tokens.PRIMARY if sel else Tokens.MUTED
         btn = ft.Container(
-            content=ft.Column([ft.Icon(icon, size=22, color=color), ft.Text(label, size=10, color=color)], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            visible=visible,  # 👈 ahora sí puedes ocultar el botón
+            content=ft.Column(
+                [
+                    ft.Icon(icon, size=22, color=color),
+                    ft.Text(label, size=10, color=color),
+                ],
+                spacing=2,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
             expand=True,
             on_click=lambda e, r=route: self.app.go(r),
         )
         self._buttons.append(btn)
         return btn
+
 
     def _build(self) -> ft.Control:
         self._buttons.clear()
@@ -43,6 +62,7 @@ class Barra_inferior(ft.Container):
             self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial", route="/historia"),
             self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción", route="/predicción"),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot", route="/chat"),
+            self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo", route="/psicologico",visible=False),  
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=8)
         return row
 

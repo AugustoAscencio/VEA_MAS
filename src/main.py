@@ -14,7 +14,7 @@ from UI.vistas.prediccion import PredicciónVer
 from UI.vistas.chatbot import ChatVer
 from UI.barra_inferior import Barra_inferior
 from UI.Login import LoginChatbot
-
+from UI.vistas.psicologo import VeaAllInOne
 USER_DATA_FILE = "user_data.json"
 
 
@@ -29,7 +29,7 @@ class App:
         self.nav: Optional[Barra_inferior] = None
 
         # config
-        page.title = "MediAssist – Mobile"
+        page.title = "VEA+"
         page.theme_mode = ft.ThemeMode.LIGHT
         page.padding = 0
         page.bgcolor = Tokens.BG
@@ -79,6 +79,10 @@ class App:
             return PredicciónVer(self).build()
         if route == "/chat":
             return ChatVer(self).build()
+        if route == "/psicologico":
+            if not hasattr(self, "psicologo_view"):
+                self.psicologo_view = VeaAllInOne(self.page)
+            return self.psicologo_view.build()
         return ft.Container(ft.Text("Ruta no encontrada"), expand=True)
 
 
@@ -87,14 +91,18 @@ class App:
 # =============================================================================
 
 def main(page: ft.Page):
-    def launch_app():
-        # 👇 Limpiar controles previos y cargar la app principal
-        page.controls.clear()
-        App(page)  # la propia App ya hace page.update()
+    #def launch_app():
+    #     # 👇 Limpiar controles previos y cargar la app principal
+    #     page.controls.clear()
+    #     App(page)  # la propia App ya hace page.update()
 
-    # 👇 Siempre arrancar con el login tipo chatbot
-    login = LoginChatbot(page, on_finish=launch_app)
-    page.add(login.build())
+    # # 👇 Siempre arrancar con el login tipo chatbot
+    # login = LoginChatbot(page, on_finish=launch_app)
+    # page.add(login.build())
+    #Solo para pruebas 
+    page.controls.clear() #recordar comentar despues
+    App(page)  #recordar comentar despues
+
 
 
 

@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass, field
 from typing import List, Dict
 
-ROUTES = ["/", "/gráficos", "/consultas", "/historia", "/predicción", "/chat"]
+ROUTES = ["/", "/gráficos", "/consultas", "/historia", "/predicción", "/chat", "/psicologico"]
 
 @dataclass
 class Mensaje:

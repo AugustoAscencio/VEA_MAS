@@ -1,5 +1,7 @@
 import flet as ft
 from ..tokens import Tokens
+from UI.vistas.psicologo import VeaAllInOne
+#from vistas
 from ..componentes import EspaciadorBarra, Rellenar, Tarjeta_estadistica, Tarjeta_de_accion, Tarjeta_de_lista
 from estado import ROUTES
 class Vista_del_panel:
@@ -47,7 +49,19 @@ class Vista_del_panel:
             ],
             spacing=12,
         )
-
+        quick3 = ft.Row(  
+            [
+                Tarjeta_de_accion(
+                    icon=ft.Icons.SELF_IMPROVEMENT,
+                    color=ft.Colors.PURPLE_400,
+                    title="Asistente Psicológico",
+                    subtitle="Apoyo emocional",
+                    on_click=lambda _: self.app.go("/psicologico"), 
+                    
+                ),
+            ],
+            spacing=12,
+        )
         recent_title = ft.Text("Actividad Reciente", **Tokens.H2)
         recent = ft.Column(
             [
@@ -65,6 +79,7 @@ class Vista_del_panel:
                 ft.Container(quick_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(quick1, margin=ft.margin.symmetric(horizontal=16)),
                 ft.Container(quick2, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),
+                ft.Container(quick3, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),  
                 ft.Container(recent_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(recent, margin=ft.margin.symmetric(horizontal=16)),
                 EspaciadorBarra(),
