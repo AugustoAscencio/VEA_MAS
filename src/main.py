@@ -91,17 +91,17 @@ class App:
 # =============================================================================
 
 def main(page: ft.Page):
-    #def launch_app():
-    #     # 👇 Limpiar controles previos y cargar la app principal
-    #     page.controls.clear()
-    #     App(page)  # la propia App ya hace page.update()
+    def launch_app():
+        # 👇 Limpiar controles previos y cargar la app principal
+        page.controls.clear()
+        App(page)  # la propia App ya hace page.update()
 
-    # # 👇 Siempre arrancar con el login tipo chatbot
-    # login = LoginChatbot(page, on_finish=launch_app)
-    # page.add(login.build())
+    # 👇 Siempre arrancar con el login tipo chatbot
+    login = LoginChatbot(page, on_finish=launch_app)
+    page.add(login.build())
     #Solo para pruebas 
-    page.controls.clear() #recordar comentar despues
-    App(page)  #recordar comentar despues
+    #page.controls.clear() #recordar comentar despues
+    #App(page)  #recordar comentar despues
 
 
 
