@@ -1,10 +1,9 @@
-
 import flet as ft
 from .tokens import Tokens
 from .componentes import Rellenar
 from typing import List, Dict, Optional, Callable
 from estado import ROUTES
-# 
+
 class Barra_inferior(ft.Container):
     """Barra inferior fija, pegada abajo.
 
@@ -22,17 +21,6 @@ class Barra_inferior(ft.Container):
             padding=Rellenar .hv(14, 10),
             border=ft.border.only(top=ft.border.BorderSide(1, Tokens.BORDER)),
         )
-
-    # def _btn(self, *, icon: str, label: str, route: str) -> ft.Container:
-    #     sel = self.app.state.active_route == route
-    #     color = Tokens.PRIMARY if sel else Tokens.MUTED
-    #     btn = ft.Container(
-    #         content=ft.Column([ft.Icon(icon, size=22, color=color), ft.Text(label, size=10, color=color)], spacing=2, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-    #         expand=True,
-    #         on_click=lambda e, r=route: self.app.go(r),
-    #     )
-    #     self._buttons.append(btn)
-    #     return btn
     def _btn(self, *, icon: str, label: str, route: str, visible: bool = True) -> ft.Container:
         sel = self.app.state.active_route == route
         color = Tokens.PRIMARY if sel else Tokens.MUTED
@@ -51,20 +39,30 @@ class Barra_inferior(ft.Container):
         )
         self._buttons.append(btn)
         return btn
-
-
+    # def _build(self) -> ft.Control:
+    #     self._buttons.clear()
+    #     row = ft.Row([
+    #         self._btn(icon=ft.Icons.HOME_ROUNDED, label="Inicio", route="/"),
+    #         self._btn(icon=ft.Icons.SHOW_CHART_ROUNDED, label="Gráficos", route="/gráficos"),
+    #         self._btn(icon=ft.Icons.CHAT_ROUNDED, label="Consultas", route="/consultas"),
+    #         self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial", route="/historia"),
+    #         self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción", route="/predicción"),
+    #         self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot", route="/chat"),
+    #         self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo", route="/psicologico",visible=False),  
+    #     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=8)
+    #     return row
     def _build(self) -> ft.Control:
         self._buttons.clear()
-        row = ft.Row([
-            self._btn(icon=ft.Icons.HOME_ROUNDED, label="Inicio", route="/"),
-            self._btn(icon=ft.Icons.SHOW_CHART_ROUNDED, label="Gráficos", route="/gráficos"),
-            self._btn(icon=ft.Icons.CHAT_ROUNDED, label="Consultas", route="/consultas"),
-            self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial", route="/historia"),
-            self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción", route="/predicción"),
-            self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot", route="/chat"),
-            self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo", route="/psicologico",visible=False),  
+        es = self.app.state.idioma == "es"
+        return ft.Row([
+            self._btn(icon=ft.Icons.HOME_ROUNDED, label="Inicio" if es else "Yawan", route="/"),
+            self._btn(icon=ft.Icons.SHOW_CHART_ROUNDED, label="Gráficos" if es else "Gráfika", route="/gráficos"),
+            self._btn(icon=ft.Icons.CHAT_ROUNDED, label="Consultas" if es else "Wan kaiki", route="/consultas"),
+            self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial" if es else "Historia", route="/historia"),
+            self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción" if es else "Predik", route="/predicción"),
+            self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot" if es else "Chatbot", route="/chat"),
+            self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo" if es else "Psikólogo", route="/psicologico", visible=False),
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=8)
-        return row
 
     def refresh(self):
         for i, route in enumerate(ROUTES):

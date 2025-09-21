@@ -9,16 +9,29 @@ class Mensaje:
     Amable : str
     Texto: str
     Tiempo: str
+    
+@dataclass
+class MensajeMiskito:
+    Amable : str
+    Texto: str
+    Tiempo: str
 
 
 @dataclass
 class Estado_de_la_aplicación:
+    idioma: str = "es"   # 👈 por defecto español
     active_route: str = "/"
     chat: List[Mensaje] = field(
         default_factory=lambda: [
             Mensaje("bot", "¡Hola! Soy tu asistente. ¿En qué puedo ayudarte?", datetime.datetime.now().strftime("%H:%M"))
         ]
     )
+    chat: List[MensajeMiskito] = field(
+        default_factory=lambda: [
+            MensajeMiskito("bot", "Ai! Yang asistente bila. Ba aiwan yamni taim sa?", datetime.datetime.now().strftime("%H:%M"))
+        ]
+    )
+    
     bp_series: List[Dict] = field(
         default_factory=lambda: [
             {"date": "1 Mar", "sys": 120, "dia": 80},
