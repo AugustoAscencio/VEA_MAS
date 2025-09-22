@@ -26,6 +26,7 @@ import flet as ft
 
 # URL del webhook n8n (tu webhook)
 N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
+N8N_WEBHOOK_URL_MISKITO = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
 
 APP_NAME = "VEA+ Asistencia Psicológica (Una clase)"
 # ---------- PALETA OSCURA (solo tonos azules, morados y claros para contraste) ----------
@@ -1587,7 +1588,7 @@ class VeaAllInOneMiskito:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 # Enviamos usuario + chatInput (puedes ajustar keys si lo requiere tu flujo n8n)
-                resp = await client.post(N8N_WEBHOOK_URL, json={"usuario": "augusto", "chatInput": text})
+                resp = await client.post(N8N_WEBHOOK_URL_MISKITO, json={"usuario": "augusto", "chatInput": text})
                 raw = resp.text
                 if resp.status_code == 200:
                     try:

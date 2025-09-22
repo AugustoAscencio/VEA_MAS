@@ -49,19 +49,52 @@ class Vista_del_panel:
             ],
             spacing=12,
         )
-        quick3 = ft.Row(  
+        # quick3 = ft.Row(  
+        #     [
+        #         Tarjeta_de_accion(
+        #             icon=ft.Icons.SELF_IMPROVEMENT,
+        #             color=ft.Colors.PURPLE_400,
+        #             title="Asistente Psicológico",
+        #             subtitle="Apoyo emocional",
+        #             on_click=lambda _: self.app.go("/psicologico"), 
+                    
+        #         ),
+        #     ],
+        #     spacing=12,
+        # )
+        # quick4 = ft.Row(  
+        #     [
+        #         Tarjeta_de_accion(
+        #             icon=ft.Icons.MEDICAL_SERVICES,
+        #             color=ft.Colors.PURPLE_400,
+        #             title="Ministerio de Salud de Nicaragua",
+        #             subtitle="MINSA",
+        #             on_click=lambda _: self.app.go("/InfoMinsa"), 
+                    
+        #         ),
+        #     ],
+        #     spacing=12,
+        # )
+        quick3_4 = ft.Row(
             [
                 Tarjeta_de_accion(
                     icon=ft.Icons.SELF_IMPROVEMENT,
                     color=ft.Colors.PURPLE_400,
                     title="Asistente Psicológico",
                     subtitle="Apoyo emocional",
-                    on_click=lambda _: self.app.go("/psicologico"), 
-                    
+                    on_click=lambda _: self.app.go("/psicologico"),
+                ),
+                Tarjeta_de_accion(
+                    icon=ft.Icons.MEDICAL_SERVICES,
+                    color=ft.Colors.AMBER_800,
+                    title="Ministerio de Salud de Nicaragua",
+                    subtitle="MINSA",
+                    on_click=lambda _: self.app.go("/InfoMinsa"),
                 ),
             ],
             spacing=12,
         )
+
         recent_title = ft.Text("Actividad Reciente", **Tokens.H2)
         recent = ft.Column(
             [
@@ -79,7 +112,9 @@ class Vista_del_panel:
                 ft.Container(quick_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(quick1, margin=ft.margin.symmetric(horizontal=16)),
                 ft.Container(quick2, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),
-                ft.Container(quick3, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),  
+                #ft.Container(quick3, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)), 
+                #ft.Container(quick4, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),
+                ft.Container(quick3_4, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),  
                 ft.Container(recent_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(recent, margin=ft.margin.symmetric(horizontal=16)),
                 EspaciadorBarra(),
@@ -133,18 +168,49 @@ class Vista_del_panel_Miskito:
             ],
             spacing=12,
         )
-        quick3 = ft.Row(  
+        quick3_4 = ft.Row(
             [
                 Tarjeta_de_accion(
                     icon=ft.Icons.SELF_IMPROVEMENT,
                     color=ft.Colors.PURPLE_400,
                     title="Psicológico asistente",
                     subtitle="Emosional baia asistensia",
-                    on_click=lambda _: self.app.go("/psicologico"), 
+                    on_click=lambda _: self.app.go("/psicologico"),
+                ),
+                Tarjeta_de_accion(
+                    icon=ft.Icons.MEDICAL_SERVICES,
+                    color=ft.Colors.AMBER_800,
+                    title="Nicaragua Siki Lakaia Minsitri-ka",
+                    subtitle="MINSA",
+                    on_click=lambda _: self.app.go("/InfoMinsa"),
                 ),
             ],
             spacing=12,
         )
+        # quick3 = ft.Row(  
+        #     [
+        #         Tarjeta_de_accion(
+        #             icon=ft.Icons.SELF_IMPROVEMENT,
+        #             color=ft.Colors.PURPLE_400,
+        #             title="Psicológico asistente",
+        #             subtitle="Emosional baia asistensia",
+        #             on_click=lambda _: self.app.go("/psicologico"), 
+        #         ),
+        #     ],
+        #     spacing=12,
+        # )
+        # quick4 = ft.Row(  
+        #     [
+        #         Tarjeta_de_accion(
+        #             icon=ft.Icons.MEDICAL_SERVICES,
+        #             color=ft.Colors.PURPLE_400,
+        #             title="Nicaragua Siki Lakaia Minsitri-ka",
+        #             subtitle="MINSA",
+        #             on_click=lambda _: self.app.go("/InfoMinsa"), 
+        #         ),
+        #     ],
+        #     spacing=12,
+        # )
         recent_title = ft.Text("Nani baia actividad", **Tokens.H2)
         recent = ft.Column(
             [
@@ -162,7 +228,9 @@ class Vista_del_panel_Miskito:
                 ft.Container(quick_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(quick1, margin=ft.margin.symmetric(horizontal=16)),
                 ft.Container(quick2, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),
-                ft.Container(quick3, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),  
+                #ft.Container(quick3, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),
+                #ft.Container(quick4, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)),   
+                ft.Container(quick3_4, margin=ft.margin.only(left=16, right=16, top=12, bottom=8)), 
                 ft.Container(recent_title, margin=ft.margin.only(left=16, right=16, top=8, bottom=8)),
                 ft.Container(recent, margin=ft.margin.symmetric(horizontal=16)),
                 EspaciadorBarra(),

@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass, field
 from typing import List, Dict
 
-ROUTES = ["/", "/gráficos", "/consultas", "/historia", "/predicción", "/chat", "/psicologico"]
+ROUTES = ["/", "/gráficos", "/consultas", "/historia", "/predicción", "/chat", "/psicologico","/InfoMinsa"]
 
 @dataclass
 class Mensaje:
@@ -19,14 +19,17 @@ class MensajeMiskito:
 
 @dataclass
 class Estado_de_la_aplicación:
-    idioma: str = "es"   # 👈 por defecto español
+    idioma: str = "es"  
+    
+    
     active_route: str = "/"
+    
     chat: List[Mensaje] = field(
         default_factory=lambda: [
             Mensaje("bot", "¡Hola! Soy tu asistente. ¿En qué puedo ayudarte?", datetime.datetime.now().strftime("%H:%M"))
         ]
     )
-    chat: List[MensajeMiskito] = field(
+    chat2: List[MensajeMiskito] = field(
         default_factory=lambda: [
             MensajeMiskito("bot", "Ai! Yang asistente bila. Ba aiwan yamni taim sa?", datetime.datetime.now().strftime("%H:%M"))
         ]

@@ -10,7 +10,7 @@ from estado import Mensaje, MensajeMiskito
 
 N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
 #La de abajo es para testear
-#N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook-test/875be057-eabd-4d46-99e6-0448922119a6"
+N8N_WEBHOOK_URL_MISKITO = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
 # ===== Bucle asincrónico en segundo plano =====
 loop = asyncio.new_event_loop()
 def start_loop(lp: asyncio.AbstractEventLoop):
@@ -266,7 +266,7 @@ class ChatVerMiskito:
 
     # ---------------- Añadir mensaje ------------
     def append(self, msg: MensajeMiskito) -> None:
-        self.app.state.chat.append(msg)
+        self.app.state.chat2.append(msg)
         if self.list_ref.current:
             self.list_ref.current.controls.append(self._bubble(msg))
             self.list_ref.current.scroll_to(offset=99999, duration=200)
@@ -306,7 +306,7 @@ class ChatVerMiskito:
         try:
             async with httpx.AsyncClient(timeout=20) as client:
                 resp = await client.post(
-                    N8N_WEBHOOK_URL,
+                    N8N_WEBHOOK_URL_MISKITO,
                     json={"usuario": "augusto", "chatInput": text},
                 )
                 raw = resp.text
@@ -339,7 +339,7 @@ class ChatVerMiskito:
 
     # ---------------- UI principal --------------
     def build(self) -> ft.Control:
-        items = [self._bubble(m) for m in self.app.state.chat]
+        items = [self._bubble(m) for m in self.app.state.chat2]
 
         lv = ft.ListView(
             ref=self.list_ref,
