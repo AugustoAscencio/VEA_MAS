@@ -1,6 +1,6 @@
 # 📱 VEA+ – Aplicación Móvil de Salud para Nicaragua
 
-VEA+ es una aplicación móvil y de escritorio desarrollada en **Python + Flet**, que busca transformar el seguimiento de la salud en Nicaragua.  
+VEA+ es una aplicación móvil en **Python + Flet**, que busca transformar el seguimiento de la salud en Nicaragua.  
 Está orientada a usuarios jóvenes, adultos y adultos mayores, con soporte inicial en **español y miskito**, y se conecta a fuentes oficiales como el **MINSA**.
 
 ---
@@ -11,6 +11,7 @@ Brindar a los nicaragüenses una herramienta accesible y confiable para:
 - Recibir recordatorios y alertas de salud.  
 - Visualizar estadísticas personales y nacionales.  
 - Ubicar centros de salud cercanos.  
+- Contar con apoyo psicológico básico mediante ejercicios de respiración guiada, registro de emociones y un chatbot empático.
 - Acceder a notificaciones oficiales del **Ministerio de Salud (MINSA)**.  
 
 Este proyecto nace como respuesta a la necesidad de **prevención y seguimiento constante**, frente a la falta de soluciones accesibles para el monitoreo de enfermedades crónicas como diabetes e hipertensión.
@@ -22,9 +23,10 @@ Este proyecto nace como respuesta a la necesidad de **prevención y seguimiento 
 - 🌐 **Idiomas soportados**: Español y Miskito.  
 - 🤖 **Chatbot inteligente** (simulación de LLaMA) para cuestionarios de salud.  
 - 📊 **Estadísticas locales y personales** con gráficos interactivos.  
-- 🏥 **Mapa de clínicas y hospitales** con integración a Google Maps.  
+- 🏥 **Directorio de clínicas y hospitales** con integración a Google Maps.  
 - 📢 **Alertas oficiales del MINSA**.  
 - 📤 **Exportación de reportes médicos** (Word/PDF).  
+- 🧠 **Asistencia Psicológica** ejercicios de respiración guiada, registro de emociones y chatbot empático.
 - 📱 **Compatibilidad multiplataforma**: Web, Android, iOS y Escritorio.  
 
 ---
@@ -34,15 +36,32 @@ El proyecto está organizado en módulos dentro de `src/`:
 
 ```
 src/
- ├── UI/
- │   ├── Login.py            # Chatbot de login y registro (Español/Miskito)
- │   ├── InformacionMinsa.py # Estadísticas y logros clave del MINSA
- │   └── ...
- ├── assets/                 # Recursos gráficos e íconos
- ├── main.py                 # Punto de entrada principal de la aplicación
- └── ...
-```
-
+ ├── assets/                     # Recursos gráficos e íconos
+ │   ├── icon.png
+ │   └── splash_android.png
+ │
+ ├── UI/                         # Interfaz de usuario (UI)
+ │   ├── __init__.py
+ │   ├── tokens.py                # Paleta de colores, estilos y tamaños
+ │   ├── componentes.py           # Widgets reutilizables (tarjetas, botones, etc.)
+ │   ├── barra_inferior.py        # Barra de navegación inferior
+ │   ├── Login.py                 # Pantallas de login y registro (Español / Miskito)
+ │   │
+ │   └── vistas/                  # Vistas principales
+ │       ├── __init__.py
+ │       ├── inicio.py            # Pantalla principal (Acciones rápidas, etc.)
+ │       ├── graficos.py          # Visualización de datos y gráficas
+ │       ├── consultas.py         # Módulo de consultas médicas virtuales
+ │       ├── historial.py         # Historial de consultas, registros, signos vitales
+ │       ├── prediccion.py        # Vista de predicción (IA aplicada a salud)
+ │       ├── chatbot.py           # Interacción con chatbot médico
+ │       ├── psicologo.py         # Asistente psicológico / All-in-One
+ │       └── InformacionMinsa.py  # Información oficial del Ministerio de Salud (MINSA)
+ │
+ ├── main.py                      # Punto de entrada principal de la aplicación
+ ├── estado.py                    # Estado global de la aplicación y rutas
+ ├── requirements.txt             # Dependencias del proyecto
+ └── pyproject.toml               # Configuración del entorno y dependencias
 ---
 
 ## ⚙️ Instalación y Ejecución
@@ -74,9 +93,9 @@ flet pack src/main.py
 
 ---
 
-## 📊 Requerimientos (Resumen SRS)
+## 📊 Requerimientos 
 
-### Funcionalidad (FURPS+)
+### Funcionalidad 
 - **MUST**: chatbot bilingüe, cuestionarios, seguimiento de 15 padecimientos, estadísticas, mapas, alertas MINSA.  
 - **SHOULD**: exportación de reportes, FAQ integrada, interfaz accesible con íconos grandes.  
 - **CAN**: conexión con médicos particulares, integración con wearables.  
@@ -90,7 +109,7 @@ flet pack src/main.py
 - Procesamiento de gráficos local.  
 
 ### Confiabilidad
-- Base de datos centralizada en **MySQL**.  
+- Base de datos ligera basada en archivos tabulares
 - Tolerancia máxima a pérdida de datos: minutos.  
 
 ---
