@@ -1,81 +1,107 @@
-# VEA+ app
+# 📱 VEA+ – Aplicación Móvil de Salud para Nicaragua
 
-## Run the app
+VEA+ es una aplicación móvil y de escritorio desarrollada en **Python + Flet**, que busca transformar el seguimiento de la salud en Nicaragua.  
+Está orientada a usuarios jóvenes, adultos y adultos mayores, con soporte inicial en **español y miskito**, y se conecta a fuentes oficiales como el **MINSA**.
 
-### uv
+---
 
-Run as a desktop app:
+## 📖 Propósito del Proyecto
+Brindar a los nicaragüenses una herramienta accesible y confiable para:
+- Registrar parámetros médicos y hábitos de vida.  
+- Recibir recordatorios y alertas de salud.  
+- Visualizar estadísticas personales y nacionales.  
+- Ubicar centros de salud cercanos.  
+- Acceder a notificaciones oficiales del **Ministerio de Salud (MINSA)**.  
 
-```
-uv run flet run
-```
+Este proyecto nace como respuesta a la necesidad de **prevención y seguimiento constante**, frente a la falta de soluciones accesibles para el monitoreo de enfermedades crónicas como diabetes e hipertensión.
 
-Run as a web app:
+---
 
-```
-uv run flet run --web
-```
+## ✨ Características Principales
+- 🔐 **Login / Registro interactivo** mediante chatbot.  
+- 🌐 **Idiomas soportados**: Español y Miskito.  
+- 🤖 **Chatbot inteligente** (simulación de LLaMA) para cuestionarios de salud.  
+- 📊 **Estadísticas locales y personales** con gráficos interactivos.  
+- 🏥 **Mapa de clínicas y hospitales** con integración a Google Maps.  
+- 📢 **Alertas oficiales del MINSA**.  
+- 📤 **Exportación de reportes médicos** (Word/PDF).  
+- 📱 **Compatibilidad multiplataforma**: Web, Android, iOS y Escritorio.  
 
-### Poetry
+---
 
-Install dependencies from `pyproject.toml`:
-
-```
-poetry install
-```
-
-Run as a desktop app:
-
-```
-poetry run flet run
-```
-
-Run as a web app:
-
-```
-poetry run flet run --web
-```
-
-For more details on running the app, refer to the [Getting Started Guide](https://flet.dev/docs/getting-started/).
-
-## Build the app
-
-### Android
+## 📂 Estructura del Proyecto
+El proyecto está organizado en módulos dentro de `src/`:
 
 ```
-flet build apk -v
+src/
+ ├── UI/
+ │   ├── Login.py            # Chatbot de login y registro (Español/Miskito)
+ │   ├── InformacionMinsa.py # Estadísticas y logros clave del MINSA
+ │   └── ...
+ ├── assets/                 # Recursos gráficos e íconos
+ ├── main.py                 # Punto de entrada principal de la aplicación
+ └── ...
 ```
 
-For more details on building and signing `.apk` or `.aab`, refer to the [Android Packaging Guide](https://flet.dev/docs/publish/android/).
+---
 
-### iOS
+## ⚙️ Instalación y Ejecución
 
-```
-flet build ipa -v
-```
-
-For more details on building and signing `.ipa`, refer to the [iOS Packaging Guide](https://flet.dev/docs/publish/ios/).
-
-### macOS
-
-```
-flet build macos -v
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/AugustoAscencio/VEA_MAS.git
+cd VEA_MAS
 ```
 
-For more details on building macOS package, refer to the [macOS Packaging Guide](https://flet.dev/docs/publish/macos/).
+### 2. Crear entorno virtual e instalar dependencias
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Linux / Mac
+.venv\Scripts\activate      # Windows
 
-### Linux
-
-```
-flet build linux -v
-```
-
-For more details on building Linux package, refer to the [Linux Packaging Guide](https://flet.dev/docs/publish/linux/).
-
-### Windows
-
-```
-flet build windows -v
+pip install -r requirements.txt
 ```
 
-For more details on building Windows package, refer to the [Windows Packaging Guide](https://flet.dev/docs/publish/windows/).
+### 3. Ejecutar la aplicación
+```bash
+flet run src/main.py -d
+```
+
+### 4. Construir versión instalable
+```bash
+flet pack src/main.py
+```
+
+---
+
+## 📊 Requerimientos (Resumen SRS)
+
+### Funcionalidad (FURPS+)
+- **MUST**: chatbot bilingüe, cuestionarios, seguimiento de 15 padecimientos, estadísticas, mapas, alertas MINSA.  
+- **SHOULD**: exportación de reportes, FAQ integrada, interfaz accesible con íconos grandes.  
+- **CAN**: conexión con médicos particulares, integración con wearables.  
+
+### Usabilidad
+- Interfaz accesible a adultos mayores.  
+- Idiomas: español y miskito.  
+
+### Rendimiento
+- Compatibilidad mínima: **Android 8 / 4 GB RAM**.  
+- Procesamiento de gráficos local.  
+
+### Confiabilidad
+- Base de datos centralizada en **MySQL**.  
+- Tolerancia máxima a pérdida de datos: minutos.  
+
+---
+
+## 🌎 Impacto en Nicaragua
+- Más de **718,000 nicaragüenses** viven con enfermedades crónicas.  
+- VEA+ busca **prevenir, acompañar y dar seguimiento constante** para mejorar la calidad de vida de pacientes y familias.  
+
+---
+
+## 📜 Licencia
+Proyecto desarrollado en el marco de **Ideathon Nicaragua** por el equipo **Burritos Binarios**.  
+Todos los derechos reservados © 2025.  
+No se permite la copia, distribución, modificación o uso del código sin autorización expresa por escrito del autor.
