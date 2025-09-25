@@ -62,6 +62,8 @@ src/
  ├── estado.py                    # Estado global de la aplicación y rutas
  ├── requirements.txt             # Dependencias del proyecto
  └── pyproject.toml               # Configuración del entorno y dependencias
+
+```
 ---
 
 ## ⚙️ Instalación y Ejecución
