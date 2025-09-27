@@ -1,6 +1,6 @@
-# 📱 VEA+ – Aplicación Móvil de Salud para Nicaragua
+# 📱 VE A+ – Aplicación Móvil de Salud para Nicaragua
 
-VEA+ es una aplicación móvil en **Python + Flet**, que busca transformar el seguimiento de la salud en Nicaragua.  
+VE A+ es una aplicación móvil en **Python + Flet**, que busca transformar el seguimiento de la salud en Nicaragua.  
 Está orientada a usuarios jóvenes, adultos y adultos mayores, con soporte inicial en **español y miskito**, y se conecta a fuentes oficiales como el **MINSA**.
 
 ---
@@ -64,6 +64,8 @@ src/
  └── pyproject.toml               # Configuración del entorno y dependencias
 
 ```
+## 🎨 Vista previa
+![Vista previa de VE A+](src/assets/VEAIMAGEN.png)
 ---
 
 ## ⚙️ Instalación y Ejecución
@@ -118,7 +120,7 @@ flet pack src/main.py
 
 ## 🌎 Impacto en Nicaragua
 - Más de **718,000 nicaragüenses** viven con enfermedades crónicas.  
-- VEA+ busca **prevenir, acompañar y dar seguimiento constante** para mejorar la calidad de vida de pacientes y familias.  
+- VE A+ busca **prevenir, acompañar y dar seguimiento constante** para mejorar la calidad de vida de pacientes y familias.  
 
 ---
 

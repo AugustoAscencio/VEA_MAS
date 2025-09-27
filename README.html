@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="%F0%9F%93%B1-ve-a-%E2%80%93-aplicaci%C3%B3n-m%C3%B3vil-de-salud-para-nicaragua">📱 VE A+ – Aplicación Móvil de Salud para Nicaragua</h1>
+<p>VE A+ es una aplicación móvil en <strong>Python + Flet</strong>, que busca transformar el seguimiento de la salud en Nicaragua.<br>
+Está orientada a usuarios jóvenes, adultos y adultos mayores, con soporte inicial en <strong>español y miskito</strong>, y se conecta a fuentes oficiales como el <strong>MINSA</strong>.</p>
+<hr>
+<h2 id="%F0%9F%93%96-prop%C3%B3sito-del-proyecto">📖 Propósito del Proyecto</h2>
+<p>Brindar a los nicaragüenses una herramienta accesible y confiable para:</p>
+<ul>
+<li>Registrar parámetros médicos y hábitos de vida.</li>
+<li>Recibir recordatorios y alertas de salud.</li>
+<li>Visualizar estadísticas personales y nacionales.</li>
+<li>Ubicar centros de salud cercanos.</li>
+<li>Contar con apoyo psicológico básico mediante ejercicios de respiración guiada, registro de emociones y un chatbot empático.</li>
+<li>Acceder a notificaciones oficiales del <strong>Ministerio de Salud (MINSA)</strong>.</li>
+</ul>
+<p>Este proyecto nace como respuesta a la necesidad de <strong>prevención y seguimiento constante</strong>, frente a la falta de soluciones accesibles para el monitoreo de enfermedades crónicas como diabetes e hipertensión.</p>
+<hr>
+<h2 id="%E2%9C%A8-caracter%C3%ADsticas-principales">✨ Características Principales</h2>
+<ul>
+<li>🔐 <strong>Login / Registro interactivo</strong> mediante chatbot.</li>
+<li>🌐 <strong>Idiomas soportados</strong>: Español y Miskito.</li>
+<li>🤖 <strong>Chatbot inteligente</strong> (simulación de LLaMA) para cuestionarios de salud.</li>
+<li>📊 <strong>Estadísticas locales y personales</strong> con gráficos interactivos.</li>
+<li>🏥 <strong>Directorio de clínicas y hospitales</strong> con integración a Google Maps.</li>
+<li>📢 <strong>Alertas oficiales del MINSA</strong>.</li>
+<li>📤 <strong>Exportación de reportes médicos</strong> (Word/PDF).</li>
+<li>🧠 <strong>Asistencia Psicológica</strong> ejercicios de respiración guiada, registro de emociones y chatbot empático.</li>
+<li>📱 <strong>Compatibilidad multiplataforma</strong>: Web, Android, iOS y Escritorio.</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%93%82-estructura-del-proyecto">📂 Estructura del Proyecto</h2>
+<p>El proyecto está organizado en módulos dentro de <code>src/</code>:</p>
+<pre class="hljs"><code><div>src/
+ ├── assets/                     # Recursos gráficos e íconos
+ │   ├── icon.png
+ │   └── splash_android.png
+ │
+ ├── UI/                         # Interfaz de usuario (UI)
+ │   ├── __init__.py
+ │   ├── tokens.py                # Paleta de colores, estilos y tamaños
+ │   ├── componentes.py           # Widgets reutilizables (tarjetas, botones, etc.)
+ │   ├── barra_inferior.py        # Barra de navegación inferior
+ │   ├── Login.py                 # Pantallas de login y registro (Español / Miskito)
+ │   │
+ │   └── vistas/                  # Vistas principales
+ │       ├── __init__.py
+ │       ├── inicio.py            # Pantalla principal (Acciones rápidas, etc.)
+ │       ├── graficos.py          # Visualización de datos y gráficas
+ │       ├── consultas.py         # Módulo de consultas médicas virtuales
+ │       ├── historial.py         # Historial de consultas, registros, signos vitales
+ │       ├── prediccion.py        # Vista de predicción (IA aplicada a salud)
+ │       ├── chatbot.py           # Interacción con chatbot médico
+ │       ├── psicologo.py         # Asistente psicológico / All-in-One
+ │       └── InformacionMinsa.py  # Información oficial del Ministerio de Salud (MINSA)
+ │
+ ├── main.py                      # Punto de entrada principal de la aplicación
+ ├── estado.py                    # Estado global de la aplicación y rutas
+ ├── requirements.txt             # Dependencias del proyecto
+ └── pyproject.toml               # Configuración del entorno y dependencias
+
+</div></code></pre>
+<hr>
+<h2 id="%E2%9A%99%EF%B8%8F-instalaci%C3%B3n-y-ejecuci%C3%B3n">⚙️ Instalación y Ejecución</h2>
+<h3 id="1-clonar-el-repositorio">1. Clonar el repositorio</h3>
+<pre class="hljs"><code><div>git <span class="hljs-built_in">clone</span> https://github.com/AugustoAscencio/VEA_MAS.git
+<span class="hljs-built_in">cd</span> VEA_MAS
+</div></code></pre>
+<h3 id="2-crear-entorno-virtual-e-instalar-dependencias">2. Crear entorno virtual e instalar dependencias</h3>
+<pre class="hljs"><code><div>python -m venv .venv
+<span class="hljs-built_in">source</span> .venv/bin/activate   <span class="hljs-comment"># Linux / Mac</span>
+.venv\Scripts\activate      <span class="hljs-comment"># Windows</span>
+
+pip install -r requirements.txt
+</div></code></pre>
+<h3 id="3-ejecutar-la-aplicaci%C3%B3n">3. Ejecutar la aplicación</h3>
+<pre class="hljs"><code><div>flet run src/main.py -d
+</div></code></pre>
+<h3 id="4-construir-versi%C3%B3n-instalable">4. Construir versión instalable</h3>
+<pre class="hljs"><code><div>flet pack src/main.py
+</div></code></pre>
+<hr>
+<h2 id="%F0%9F%93%8A-requerimientos">📊 Requerimientos</h2>
+<h3 id="funcionalidad">Funcionalidad</h3>
+<ul>
+<li><strong>MUST</strong>: chatbot bilingüe, cuestionarios, seguimiento de 15 padecimientos, estadísticas, mapas, alertas MINSA.</li>
+<li><strong>SHOULD</strong>: exportación de reportes, FAQ integrada, interfaz accesible con íconos grandes.</li>
+<li><strong>CAN</strong>: conexión con médicos particulares, integración con wearables.</li>
+</ul>
+<h3 id="usabilidad">Usabilidad</h3>
+<ul>
+<li>Interfaz accesible a adultos mayores.</li>
+<li>Idiomas: español y miskito.</li>
+</ul>
+<h3 id="rendimiento">Rendimiento</h3>
+<ul>
+<li>Compatibilidad mínima: <strong>Android 8 / 4 GB RAM</strong>.</li>
+<li>Procesamiento de gráficos local.</li>
+</ul>
+<h3 id="confiabilidad">Confiabilidad</h3>
+<ul>
+<li>Base de datos ligera basada en archivos tabulares</li>
+<li>Tolerancia máxima a pérdida de datos: minutos.</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%8C%8E-impacto-en-nicaragua">🌎 Impacto en Nicaragua</h2>
+<ul>
+<li>Más de <strong>718,000 nicaragüenses</strong> viven con enfermedades crónicas.</li>
+<li>VE A+ busca <strong>prevenir, acompañar y dar seguimiento constante</strong> para mejorar la calidad de vida de pacientes y familias.</li>
+</ul>
+<hr>
+<h2 id="%F0%9F%93%9C-licencia">📜 Licencia</h2>
+<p>Proyecto desarrollado en el marco de <strong>Ideathon Nicaragua</strong> por el equipo <strong>Burritos Binarios</strong>.<br>
+Todos los derechos reservados © 2025.<br>
+No se permite la copia, distribución, modificación o uso del código sin autorización expresa por escrito del autor.</p>
+
+</body>
+</html>
