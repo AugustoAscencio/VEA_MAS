@@ -15,7 +15,7 @@ class Vista_de_gráficos:
                 ft.LineChartData(data_points=pts_sys, color=ft.Colors.RED_600, stroke_width=2, curved=True, stroke_cap_round=True),
                 ft.LineChartData(data_points=pts_dia, color=ft.Colors.BLUE_600, stroke_width=2, curved=True, stroke_cap_round=True),
             ],
-            left_axis=ft.ChartAxis(labels_size=12),
+            left_axis=ft.ChartAxis(labels_size=32),
             bottom_axis=ft.ChartAxis(labels_size=12, labels=labels),
             horizontal_grid_lines=ft.ChartGridLines(color=ft.Colors.BLUE_GREY_50, width=0.5),
             vertical_grid_lines=ft.ChartGridLines(color=ft.Colors.BLUE_GREY_50, width=0.5),
@@ -31,7 +31,7 @@ class Vista_de_gráficos:
         labels = [ft.ChartAxisLabel(value=i, label=ft.Text(d["date"], size=9)) for i, d in enumerate(self.app.state.hr_series)]
         chart = ft.LineChart(
             data_series=[ft.LineChartData(data_points=pts, color=ft.Colors.DEEP_PURPLE_400, stroke_width=2, curved=True, stroke_cap_round=True)],
-            left_axis=ft.ChartAxis(labels_size=12),
+            left_axis=ft.ChartAxis(labels_size=32),
             bottom_axis=ft.ChartAxis(labels_size=12, labels=labels),
             horizontal_grid_lines=ft.ChartGridLines(color=ft.Colors.BLUE_GREY_50, width=0.5),
             vertical_grid_lines=ft.ChartGridLines(color=ft.Colors.BLUE_GREY_50, width=0.5),
@@ -45,7 +45,7 @@ class Vista_de_gráficos:
         return box
 
     def build(self) -> ft.Control:
-        header = ft.Row([ft.Text("Gráficos", **Tokens.H2), ft.FilledTonalButton(ft.Row([ft.Icon(ft.Icons.CALENDAR_TODAY, size=16), ft.Text("Este mes", size=12)], spacing=8))], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        header = ft.Row([ft.Text("Gráficos", **Tokens.H2)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
         lv = ft.ListView([
             ft.Container(header, margin=ft.margin.only(left=16, right=16, top=16, bottom=8)),
             ft.Container(self._bp_chart(), margin=ft.margin.symmetric(horizontal=16, vertical=8)),
