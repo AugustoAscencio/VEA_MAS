@@ -42,9 +42,9 @@ class ConsultasVer:
         header = ft.Row(
             [
                 ft.Text("Consultas", **Tokens.H2),
-                ft.FilledButton(
-                    ft.Row([ft.Icon(ft.Icons.ADD, size=16), ft.Text("Nueva", size=12)], spacing=8)
-                )
+                # ft.FilledButton(
+                #     ft.Row([ft.Icon(ft.Icons.ADD, size=16), ft.Text("Nueva", size=12)], spacing=8)
+                # )
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN
         )
@@ -56,7 +56,7 @@ class ConsultasVer:
             ft.Container(height=80),
         ], expand=True)
         return lv
-    
+
 class ConsultasVerMiskito:
     def __init__(self, app):
         self.app = app
