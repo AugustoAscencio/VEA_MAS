@@ -25,8 +25,8 @@ from asyncio import run_coroutine_threadsafe
 import flet as ft
 
 # URL del webhook n8n (tu webhook)
-N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
-N8N_WEBHOOK_URL_MISKITO = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
+N8N_WEBHOOK_URL = "https://augustosecundario.app.n8n.cloud/webhook/7f04998d-f7df-4f4a-bc3e-2daddcac7666"
+N8N_WEBHOOK_URL_MISKITO = "https://augustosecundario.app.n8n.cloud/webhook/74c54f73-7ebb-46d1-9ea8-fd81e7d4f243"
 
 APP_NAME = "VEA+ Asistencia Psicológica (Una clase)"
 # ---------- PALETA OSCURA (solo tonos azules, morados y claros para contraste) ----------

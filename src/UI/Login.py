@@ -32,8 +32,8 @@ from typing import Callable, Any, Optional
 # ====== CONFIG - Cambia estas URLs por tus endpoints n8n reales ======
 #LOGIN_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/b4966ffa-b9aa-49b8-b1a4-54cea285f83f"       # <- reemplaza por tu URL de validación
 #REGISTER_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/cbe10780-7e24-4118-8820-8c30cdc8c86e" # <- reemplaza por tu URL de registro
-LOGIN_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/b4966ffa-b9aa-49b8-b1a4-54cea285f83f"       # <- reemplaza por tu URL de validación
-REGISTER_N8N_URL = "https://augustocraft02.app.n8n.cloud/webhook/9859b5b2-d480-42bd-a4e5-7aeb0efb7529" # <- reemplaza por tu URL de registro
+LOGIN_N8N_URL = "https://augustosecundario.app.n8n.cloud/webhook/b4966ffa-b9aa-49b8-b1a4-54cea285f83f"       # <- reemplaza por tu URL de validación
+REGISTER_N8N_URL = "https://augustosecundario.app.n8n.cloud/webhook/9859b5b2-d480-42bd-a4e5-7aeb0efb7529" # <- reemplaza por tu URL de registro
 
 # ======================================================================
 # Simple logging helper (puedes redirigir a logger real si lo deseas)

@@ -8,9 +8,10 @@ from ..tokens import Tokens
 from ..componentes import EspaciadorBarra, Rellenar
 from estado import Mensaje, MensajeMiskito
 
-N8N_WEBHOOK_URL = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
+N8N_WEBHOOK_URL = "https://augustosecundario.app.n8n.cloud/webhook/d689c13c-e591-45e1-886c-8fd2325991af"
+
 #La de abajo es para testear
-N8N_WEBHOOK_URL_MISKITO = "https://augustocraft02.app.n8n.cloud/webhook/875be057-eabd-4d46-99e6-0448922119a6"
+N8N_WEBHOOK_URL_MISKITO = "https://augustosecundario.app.n8n.cloud/webhook/bacdd82a-9b9a-4543-a27c-c5783b683163"
 # ===== Bucle asincrónico en segundo plano =====
 loop = asyncio.new_event_loop()
 def start_loop(lp: asyncio.AbstractEventLoop):
