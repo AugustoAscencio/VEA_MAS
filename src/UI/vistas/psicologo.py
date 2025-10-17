@@ -1,5 +1,6 @@
 
 from __future__ import annotations
+from UI.componentes import Tokens
 """
 VEA+ — versión "todo en una sola clase" con chat asincrónico a n8n
 Modificado: paleta de colores con ft.Colors y "Evaluación rápida" con diálogo de confirmación.
@@ -581,7 +582,7 @@ class VeaAllInOne:
         breath_instr = ft.Text("Pulsa Iniciar y sigue la forma en el centro. Respira con calma.", size=12, color=ft.Colors.with_opacity(0.8, MUTED_DARK))
         # widget dinámico (guardamos referencia del contenedor)
         self._breath_widget_container = self._build_breath_widget()
-        self.breath_btn = ft.ElevatedButton("Iniciar Respiración", on_click=lambda e: self._on_breath_btn(e), bgcolor=ACCENT1, width=140)
+        self.breath_btn = ft.ElevatedButton("Iniciar Respiración", on_click=lambda e: self._on_breath_btn(e), bgcolor=ft.Colors.WHITE, width=140)
         stop_btn = ft.ElevatedButton("Detener", on_click=lambda e: self._on_stop_breath(e), width=100)
         breath_controls = ft.Row([self.breath_btn, stop_btn], spacing=12, alignment=ft.MainAxisAlignment.CENTER)
         self.status_text = ft.Text(
@@ -607,7 +608,7 @@ class VeaAllInOne:
         self.intensity_slider = ft.Slider(min=1, max=10, divisions=9, label="Intensidad", value=5, expand=True)
         self.notes_field = ft.TextField(label="Notas / ¿Qué pasó hoy?", multiline=True, min_lines=3, max_lines=6, expand=True)
         self.tags_field = ft.TextField(label="Etiquetas (separadas por comas)", expand=True)
-        register_row = ft.Row([ft.ElevatedButton("Registrar", on_click=lambda e: self._register_mood(e), bgcolor=ACCENT, width=140), ft.ElevatedButton("Exportar", on_click=lambda e: self._export_local(e), width=120)], spacing=12)
+        register_row = ft.Row([ft.ElevatedButton("Registrar", on_click=lambda e: self._register_mood(e), bgcolor=Tokens.PRIMARY_50, width=140), ft.ElevatedButton("Exportar", on_click=lambda e: self._export_local(e), width=120)], spacing=12)
 
         # --- Info / aviso antes del checklist ---
         quick_info = ft.Container(
@@ -694,14 +695,14 @@ class VeaAllInOne:
             self._stop_breath()
             if self.breath_btn:
                 self.breath_btn.text = "Iniciar Respiración"
-                self.breath_btn.bgcolor = ACCENT1
+                self.breath_btn.bgcolor = ft.Colors.WHITE
             self._append_chat("Respiración pausada. Respira a tu ritmo.", sender="bot")
 
     def _on_stop_breath(self, e=None):
         self._stop_breath()
         if self.breath_btn:
             self.breath_btn.text = "Iniciar Respiración"
-            self.breath_btn.bgcolor = ACCENT1
+            self.breath_btn.bgcolor = ft.Colors.WHITE
         self._append_chat("Respiración detenida.", sender="bot")
 
     def _append_chat(self, text: str, sender: str = "bot", compact: bool = False):

@@ -61,7 +61,7 @@ class Barra_inferior(ft.Container):
             self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial" if es else "Historia", route="/historia"),
             # self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción" if es else "Predik", route="/predicción"),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot" if es else "Chatbot", route="/chat"),
-            self._btn(icon=ft.Icons.SETTINGS_SHARP, label="Chatbot" if es else "Chatbot", route="/chat"),
+            self._btn(icon=ft.Icons.SETTINGS_SHARP, label="Ajustes" if es else "Ajustes", route="/chat"),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo" if es else "Psikólogo", route="/psicologico", visible=False),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="MINSA" if es else "MINSA", route="/InfoMinsa", visible=False),
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=8)

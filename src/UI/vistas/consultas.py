@@ -63,7 +63,7 @@ class ConsultasVerMiskito:
 
     def _appointment(self) -> ft.Container:
         chip = ft.Container(
-            ft.Text("Yawan lila", size=10, color=Tokens.WARN_50),  # En progreso
+            ft.Text("Yawan lila" ,size=10, color=Tokens.WARN_50),
             bgcolor=ft.Colors.BLUE_GREY_50,
             padding=Rellenar.hv(10, 4),
             border_radius=12

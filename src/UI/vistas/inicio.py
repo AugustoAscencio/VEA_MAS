@@ -134,22 +134,22 @@ class Vista_del_panel_Miskito:
                 [ft.Text("Pain sa!", **Tokens.H2), ft.Text("Mairin baia cita nani aiwan nani 15:00 taim ra", **Tokens.SUB)],
                 spacing=4,
             ),
-            bgcolor=Tokens.PRIMARY_50,
+            bgcolor=Tokens.PRIMARY,
             border_radius=Tokens.RADIUS,
             padding=Rellenar .all(16),
         )
 
         row1 = ft.Row(
             [
-                 Tarjeta_estadistica(icon=ft.Icons.FAVORITE, color=Tokens.OK, title="General baia", chip="Risk sa", value="Pain"),
-                 Tarjeta_estadistica(icon=ft.Icons.MONITOR_HEART, color=ft.Colors.BLUE_600, title="Frekuensia", chip="74 BPM", value="Normal"),
+                 Tarjeta_estadistica(icon=ft.Icons.FAVORITE, color=Tokens.BORDER, title="General baia", chip="Risk sa", value="Pain"),
+                 Tarjeta_estadistica(icon=ft.Icons.MONITOR_HEART, color=Tokens.BORDER, title="Frekuensia", chip="74 BPM", value="Normal"),
             ],
             spacing=12,
         )
         row2 = ft.Row(
             [
-                 Tarjeta_estadistica(icon=ft.Icons.WARNING, color=Tokens.WARN, title="Risk PA", chip="Yamni", value="Tuktan"),
-                 Tarjeta_estadistica(icon=ft.Icons.CALENDAR_TODAY, color=ft.Colors.DEEP_PURPLE, title="Baia cita", chip="15:00", value="Nani"),
+                 Tarjeta_estadistica(icon=ft.Icons.WARNING, color=Tokens.BORDER, title="Risk PA", chip="Yamni", value="Tuktan"),
+                 Tarjeta_estadistica(icon=ft.Icons.CALENDAR_TODAY, color=Tokens.BORDER, title="Baia cita", chip="15:00", value="Nani"),
             ],
             spacing=12,
         )
@@ -157,15 +157,15 @@ class Vista_del_panel_Miskito:
         quick_title = ft.Text("Rápido baia wina", **Tokens.H2)
         quick1 = ft.Row(
             [
-                Tarjeta_de_accion(icon=ft.Icons.PSYCHOLOGY, color=ft.Colors.DEEP_PURPLE, title="IA baia análisis", subtitle="Sintomas", on_click=lambda _: self.app.go("/chat")),
-                Tarjeta_de_accion(icon=ft.Icons.VIDEO_CALL, color=ft.Colors.BLUE_600, title="Virtual baia consulta", subtitle="Especialista nani"),
+                Tarjeta_de_accion(icon=ft.Icons.PSYCHOLOGY, color=Tokens.BORDER, title="IA baia análisis", subtitle="Sintomas", on_click=lambda _: self.app.go("/chat")),
+                Tarjeta_de_accion(icon=ft.Icons.VIDEO_CALL, color=Tokens.BORDER, title="Virtual baia consulta", subtitle="Especialista nani"),
             ],
             spacing=12,
         )
         quick2 = ft.Row(
             [
-                Tarjeta_de_accion(icon=ft.Icons.MONITOR_HEART, color=Tokens.OK, title="Monitoreo", subtitle="Vital baia sinia"),
-                Tarjeta_de_accion(icon=ft.Icons.EMERGENCY, color=Tokens.DANGER, title="Emergencia", subtitle="SOS"),
+                Tarjeta_de_accion(icon=ft.Icons.MONITOR_HEART, color=Tokens.BORDER, title="Monitoreo", subtitle="Vital baia sinia"),
+                Tarjeta_de_accion(icon=ft.Icons.EMERGENCY, color=Tokens.BORDER, title="Emergencia", subtitle="SOS"),
             ],
             spacing=12,
         )
@@ -173,14 +173,14 @@ class Vista_del_panel_Miskito:
             [
                 Tarjeta_de_accion(
                     icon=ft.Icons.SELF_IMPROVEMENT,
-                    color=ft.Colors.PURPLE_400,
+                    color=Tokens.BORDER,
                     title="Psicológico asistente",
                     subtitle="Emosional baia asistensia",
                     on_click=lambda _: self.app.go("/psicologico"),
                 ),
                 Tarjeta_de_accion(
                     icon=ft.Icons.MEDICAL_SERVICES,
-                    color=ft.Colors.AMBER_800,
+                    color=Tokens.BORDER,
                     title="Nicaragua Siki Lakaia Minsitri-ka",
                     subtitle="MINSA",
                     on_click=lambda _: self.app.go("/InfoMinsa"),

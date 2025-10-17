@@ -219,35 +219,7 @@ class MINSAInfoVerEspañol:
             icon=ft.Icons.GAVEL
         )
 
-    def _noticias(self) -> ft.Container:
-        noticias_data = [
-            {"titulo": "MINSA recibe donación de medicamentos", "fecha": "20 Septiembre 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Inauguración de Hospital Primario en el Caribe Norte", "fecha": "15 Septiembre 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Jornada médica especializada en Masaya", "fecha": "08 Septiembre 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Fortalecimiento de red de atención a la niñez", "fecha": "01 Septiembre 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Plan de vigilancia epidemiológica en invierno", "fecha": "25 Agosto 2025", "url": "https://www.minsa.gob.ni/noticias"},
-        ]
 
-        noticias_list = ft.Column([
-            ft.Card(
-                content=ft.ListTile(
-                    leading=ft.Icon(ft.Icons.ARTICLE, color=ft.Colors.TEAL),
-                    title=ft.Text(n["titulo"], size=13, weight="w600"),
-                    subtitle=ft.Text(n["fecha"], size=10, color=ft.Colors.BLUE_GREY_400),
-                    on_click=lambda e, url=n["url"]: self.app.page.launch_url(url)
-                ), elevation=0.5
-            ) for n in noticias_data
-        ], spacing=10)
-
-        return self._create_section(
-            "Noticias y Publicaciones",
-            ft.Column([
-                ft.Text("Mantente informado sobre las actividades del MINSA.", size=12, color=ft.Colors.BLUE_GREY_700),
-                noticias_list,
-                ft.TextButton("Ver todas las noticias", url="https://www.minsa.gob.ni/noticias")
-            ], spacing=12),
-            icon=ft.Icons.NEW_RELEASES
-        )
 
     def _estadisticas(self) -> ft.Container:
         styles = self._get_styles()
@@ -369,7 +341,6 @@ class MINSAInfoVerEspañol:
                 self._servicios_red(),
                 self._campañas(),
                 self._normativas(),
-                self._noticias(),
                 self._estadisticas(),
                 self._contacto(),
             ],
@@ -609,35 +580,7 @@ class MINSAInfoVerMiskito:
             icon=ft.Icons.GAVEL
         )
 
-    def _noticias(self) -> ft.Container:
-        noticias_data = [
-            {"titulo": "MINSA-ka medisen nani ra.", "fecha": "20 Setembr 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Nort Karibian Hospitl lakaia inawgurishn.", "fecha": "15 Setembr 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Masaya lakaia speshlti medikl jarni.", "fecha": "08 Setembr 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Nit nani bui kaikankaia netwurk-ka.", "fecha": "01 Setembr 2025", "url": "https://www.minsa.gob.ni/noticias"},
-            {"titulo": "Inviern lakaia epideml-jikl vigilns plan.", "fecha": "25 Agost 2025", "url": "https://www.minsa.gob.ni/noticias"},
-        ]
 
-        noticias_list = ft.Column([
-            ft.Card(
-                content=ft.ListTile(
-                    leading=ft.Icon(ft.Icons.ARTICLE, color=ft.Colors.TEAL),
-                    title=ft.Text(n["titulo"], size=13, weight="w600"),
-                    subtitle=ft.Text(n["fecha"], size=10, color=ft.Colors.BLUE_GREY_400),
-                    on_click=lambda e, url=n["url"]: self.app.page.launch_url(url)
-                ), elevation=0.5
-            ) for n in noticias_data
-        ], spacing=10)
-
-        return self._create_section(
-            "Nyus nani ka publikishn nani",
-            ft.Column([
-                ft.Text("Minsa lakaia aktiviti nani ra.", size=12, color=ft.Colors.BLUE_GREY_700),
-                noticias_list,
-                ft.TextButton("Wihkaia nyus nani", url="https://www.minsa.gob.ni/noticias")
-            ], spacing=12),
-            icon=ft.Icons.NEW_RELEASES
-        )
 
     def _estadisticas(self) -> ft.Container:
         styles = self._get_styles()
@@ -759,7 +702,6 @@ class MINSAInfoVerMiskito:
                 self._servicios_red(),
                 self._campañas(),
                 self._normativas(),
-                self._noticias(),
                 self._estadisticas(),
                 self._contacto(),
             ],
