@@ -8,7 +8,7 @@ class ConsultasVer:
 
     def _appointment(self) -> ft.Container:
         chip = ft.Container(
-            ft.Text("En progreso", size=10, color=Tokens.MUTED),
+            ft.Text("En progreso", size=10, color=Tokens.WARN_50),
             bgcolor=ft.Colors.BLUE_GREY_50,
             padding=Rellenar.hv(10, 4),
             border_radius=12
@@ -17,7 +17,7 @@ class ConsultasVer:
             [
                 ft.Column([
                     ft.Text("Dra. María López", weight=ft.FontWeight.W_600, size=14),
-                    ft.Text("Cardiología", size=11, color=Tokens.MUTED)
+                    ft.Text("Cardiología", size=11, color=Tokens.WARN_50)
                 ], spacing=4),
                 chip
             ],
@@ -25,8 +25,8 @@ class ConsultasVer:
         )
         row2 = ft.Row(
             [
-                ft.Icon(ft.Icons.SCHEDULE, size=16, color=Tokens.MUTED),
-                ft.Text("Inicio 14:30 · 30 min", size=11, color=Tokens.MUTED)
+                ft.Icon(ft.Icons.SCHEDULE, size=16, color=Tokens.WARN_50),
+                ft.Text("Inicio 14:30 · 30 min", size=11, color=Tokens.WARN_50)
             ], spacing=8
         )
         btn = ft.FilledButton("Unirse a la consulta")
@@ -63,7 +63,7 @@ class ConsultasVerMiskito:
 
     def _appointment(self) -> ft.Container:
         chip = ft.Container(
-            ft.Text("Yawan lila", size=10, color=Tokens.MUTED),  # En progreso
+            ft.Text("Yawan lila", size=10, color=Tokens.WARN_50),  # En progreso
             bgcolor=ft.Colors.BLUE_GREY_50,
             padding=Rellenar.hv(10, 4),
             border_radius=12
@@ -71,14 +71,14 @@ class ConsultasVerMiskito:
         row1 = ft.Row([
             ft.Column([
                 ft.Text("Dra. María López", weight=ft.FontWeight.W_600, size=14),
-                ft.Text("Kardiyolôjia", size=11, color=Tokens.MUTED)  # Cardiología
+                ft.Text("Kardiyolôjia", size=11, color=Tokens.WARN_50)  # Cardiología
             ], spacing=4),
             chip
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
 
         row2 = ft.Row([
-            ft.Icon(ft.Icons.SCHEDULE, size=16, color=Tokens.MUTED),
-            ft.Text("Tuktan 14:30 · 30 min", size=11, color=Tokens.MUTED)  # Inicio
+            ft.Icon(ft.Icons.SCHEDULE, size=16, color=Tokens.WARN_50),
+            ft.Text("Tuktan 14:30 · 30 min", size=11, color=Tokens.WARN_50)  # Inicio
         ], spacing=8)
 
         btn = ft.FilledButton("Aisanka unta")  # Unirse a la consulta

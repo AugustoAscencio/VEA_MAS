@@ -31,7 +31,7 @@ N8N_WEBHOOK_URL_MISKITO = "https://augustosecundario.app.n8n.cloud/webhook/74c54
 APP_NAME = "VEA+ Asistencia Psicológica (Una clase)"
 # ---------- PALETA OSCURA (solo tonos azules, morados y claros para contraste) ----------
 PRIMARY = ft.Colors.INDIGO_600
-ACCENT  = ft.Colors.TEAL_600
+ACCENT1  = ft.Colors.TEAL_400
 BG      = ft.Colors.BLUE_GREY_50
 SURFACE = ft.Colors.WHITE
 TEXT    = ft.Colors.BLACK
@@ -581,7 +581,7 @@ class VeaAllInOne:
         breath_instr = ft.Text("Pulsa Iniciar y sigue la forma en el centro. Respira con calma.", size=12, color=ft.Colors.with_opacity(0.8, MUTED_DARK))
         # widget dinámico (guardamos referencia del contenedor)
         self._breath_widget_container = self._build_breath_widget()
-        self.breath_btn = ft.ElevatedButton("Iniciar Respiración", on_click=lambda e: self._on_breath_btn(e), bgcolor=PRIMARY, width=140)
+        self.breath_btn = ft.ElevatedButton("Iniciar Respiración", on_click=lambda e: self._on_breath_btn(e), bgcolor=ACCENT1, width=140)
         stop_btn = ft.ElevatedButton("Detener", on_click=lambda e: self._on_stop_breath(e), width=100)
         breath_controls = ft.Row([self.breath_btn, stop_btn], spacing=12, alignment=ft.MainAxisAlignment.CENTER)
         self.status_text = ft.Text(
@@ -661,8 +661,8 @@ class VeaAllInOne:
                 ft.Divider(height=1),
                 breath_card,
                 ft.Divider(height=1),
-                chat_card,
-                ft.Divider(height=1),
+                # chat_card,
+                # ft.Divider(height=1),
                 right_card,
                 ft.Divider(height=1),
                 checks_col
@@ -694,14 +694,14 @@ class VeaAllInOne:
             self._stop_breath()
             if self.breath_btn:
                 self.breath_btn.text = "Iniciar Respiración"
-                self.breath_btn.bgcolor = PRIMARY
+                self.breath_btn.bgcolor = ACCENT1
             self._append_chat("Respiración pausada. Respira a tu ritmo.", sender="bot")
 
     def _on_stop_breath(self, e=None):
         self._stop_breath()
         if self.breath_btn:
             self.breath_btn.text = "Iniciar Respiración"
-            self.breath_btn.bgcolor = PRIMARY
+            self.breath_btn.bgcolor = ACCENT1
         self._append_chat("Respiración detenida.", sender="bot")
 
     def _append_chat(self, text: str, sender: str = "bot", compact: bool = False):

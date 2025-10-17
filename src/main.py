@@ -190,6 +190,8 @@ from UI.barra_inferior import Barra_inferior
 from UI.Login import LoginChatbot, LoginChatbotMiskito
 from UI.vistas.psicologo import VeaAllInOne, VeaAllInOneMiskito
 from UI.vistas.InformacionMinsa import MINSAInfoVerEspañol, MINSAInfoVerMiskito
+from src.UI.vistas.psicologo import PRIMARY
+
 
 # =============================================================================
 class App:
@@ -271,7 +273,7 @@ def language_selector(page: ft.Page):
         page.update()
 
     # Fondo blanco mate
-    page.bgcolor = ft.Colors.WHITE
+    page.bgcolor = Tokens.SURFACE
 
     # Título centralizado
     titulo = ft.Container(
@@ -281,13 +283,13 @@ def language_selector(page: ft.Page):
                     "Seleccione su idioma / Lasi la gune",
                     size=28,
                     weight=ft.FontWeight.BOLD,
-                    color=ft.Colors.BLUE_900,
+                    color=Tokens.PRIMARY_DARK,
                     text_align=ft.TextAlign.CENTER,
                 ),
                 ft.Text(
                     "Español / Miskito",
                     size=18,
-                    color=ft.Colors.BLUE_GREY_600,
+                    color=Tokens.SUBTLE,
                     text_align=ft.TextAlign.CENTER
                 )
             ],
@@ -307,8 +309,8 @@ def language_selector(page: ft.Page):
                 on_click=lambda e: select_language("es"),
                 height=55,
                 width=150,
-                bgcolor=ft.Colors.LIGHT_BLUE_100,
-                color=ft.Colors.BLUE_900,
+                bgcolor=Tokens.PRIMARY,
+                color=Tokens.SUBTLE,
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=12),
                     elevation={"": 2, "hovered": 6, "pressed": 2},
@@ -319,8 +321,8 @@ def language_selector(page: ft.Page):
                 on_click=lambda e: select_language("mi"),
                 height=55,
                 width=150,
-                bgcolor=ft.Colors.LIGHT_GREEN_100,
-                color=ft.Colors.GREEN_900,
+                bgcolor=Tokens.PRIMARY,
+                color=Tokens.SUBTLE,
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=12),
                     elevation={"": 2, "hovered": 6, "pressed": 2},

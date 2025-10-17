@@ -7,8 +7,8 @@ class HistoriaVer:
         self.app = app
 
     def _personal(self) -> ft.Container:
-        g1 = ft.Row([ft.Column([ft.Text("Edad", size=10, color=Tokens.MUTED), ft.Text("32 años", size=12)], spacing=4), ft.Column([ft.Text("Grupo", size=10, color=Tokens.MUTED), ft.Text("O+", size=12)], spacing=4)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-        g2 = ft.Row([ft.Column([ft.Text("Peso", size=10, color=Tokens.MUTED), ft.Text("71.3 kg", size=12)], spacing=4), ft.Column([ft.Text("Altura", size=10, color=Tokens.MUTED), ft.Text("1.75 m", size=12)], spacing=4)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        g1 = ft.Row([ft.Column([ft.Text("Edad", size=10, color=Tokens.WARN_50), ft.Text("32 años", size=12)], spacing=4), ft.Column([ft.Text("Grupo", size=10, color=Tokens.WARN_50), ft.Text("O+", size=12)], spacing=4)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        g2 = ft.Row([ft.Column([ft.Text("Peso", size=10, color=Tokens.WARN_50), ft.Text("71.3 kg", size=12)], spacing=4), ft.Column([ft.Text("Altura", size=10, color=Tokens.WARN_50), ft.Text("1.75 m", size=12)], spacing=4)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
         return Seccion("Información Personal", g1, g2, icon=ft.Icons.BADGE_OUTLINED)
 
     def _allergies(self) -> ft.Container:
@@ -31,22 +31,22 @@ class HistoriaVerMiskito:
     def _personal(self) -> ft.Container:
         g1 = ft.Row([
             ft.Column([
-                ft.Text("Upla", size=10, color=Tokens.MUTED),   # Edad
+                ft.Text("Upla", size=10, color=Tokens.WARN_50),   # Edad
                 ft.Text("32 wal", size=12)                     # 32 años
             ], spacing=4),
             ft.Column([
-                ft.Text("Grupu", size=10, color=Tokens.MUTED), # Grupo
+                ft.Text("Grupu", size=10, color=Tokens.WARN_50), # Grupo
                 ft.Text("O+", size=12)
             ], spacing=4)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
 
         g2 = ft.Row([
             ft.Column([
-                ft.Text("Baprika", size=10, color=Tokens.MUTED),  # Peso
+                ft.Text("Baprika", size=10, color=Tokens.WARN_50),  # Peso
                 ft.Text("71.3 kg", size=12)
             ], spacing=4),
             ft.Column([
-                ft.Text("Dîra", size=10, color=Tokens.MUTED),     # Altura
+                ft.Text("Dîra", size=10, color=Tokens.WARN_50),     # Altura
                 ft.Text("1.75 m", size=12)
             ], spacing=4)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)

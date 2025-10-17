@@ -126,7 +126,10 @@ class LoginChatbot:
         self.valid_dispositivos = {"android", "iphone", "basico", "tableta", "otro", "ios", "ipad"}
 
         # Inicia el chat en background
-        run_coroutine_threadsafe(self.start_chat(), loop)
+        # run_coroutine_threadsafe(self.start_chat(), loop)
+
+        self.state = "logged_in"
+        self.on_finish()
 
     # ---------------- UI helpers ----------------
     def _bubble(self, sender: str, text: str) -> ft.Row:

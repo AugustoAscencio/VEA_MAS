@@ -69,7 +69,7 @@ class Tarjeta_estadistica(ft.Container):
                     [ft.Icon(icon, color=color, size=22), Chip(chip, color=color)],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 ),
-                ft.Text(title, size=11, color=Tokens.MUTED),
+                ft.Text(title, size=11, color=Tokens.WARN_50),
                 ft.Text(value, size=16, weight=ft.FontWeight.W_600),
             ],
             spacing=8,
@@ -90,7 +90,7 @@ class Tarjeta_de_accion(ft.Container):
             [
                 ft.Icon(icon, color=color, size=28),
                 ft.Text(title, size=12, weight=ft.FontWeight.W_600, text_align=ft.TextAlign.CENTER),
-                ft.Text(subtitle, size=10, color=Tokens.MUTED, text_align=ft.TextAlign.CENTER),
+                ft.Text(subtitle, size=10, color=Tokens.WARN_50, text_align=ft.TextAlign.CENTER),
             ],
             spacing=6,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -117,7 +117,7 @@ class Tarjeta_de_lista(ft.Container):
             alignment=ft.alignment.center,
         )
         txt = ft.Column(
-            [ft.Text(title, size=12, weight=ft.FontWeight.W_500), ft.Text(subtitle, size=10, color=Tokens.MUTED)],
+            [ft.Text(title, size=12, weight=ft.FontWeight.W_500), ft.Text(subtitle, size=10, color=Tokens.WARN_50)],
             spacing=4,
         )
         super().__init__(

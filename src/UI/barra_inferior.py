@@ -18,12 +18,12 @@ class Barra_inferior(ft.Container):
         super().__init__(
             content=self._build(),
             bgcolor=Tokens.SURFACE,
-            padding=Rellenar .hv(14, 10),
+            padding=Rellenar.hv(14, 10),
             border=ft.border.only(top=ft.border.BorderSide(1, Tokens.BORDER)),
         )
     def _btn(self, *, icon: str, label: str, route: str, visible: bool = True) -> ft.Container:
         sel = self.app.state.active_route == route
-        color = Tokens.PRIMARY if sel else Tokens.MUTED
+        color = Tokens.PRIMARY_DARK if sel else Tokens.SUBTLE
         btn = ft.Container(
             visible=visible,  # 👈 ahora sí puedes ocultar el botón
             content=ft.Column(
@@ -59,8 +59,9 @@ class Barra_inferior(ft.Container):
             self._btn(icon=ft.Icons.SHOW_CHART_ROUNDED, label="Gráficos" if es else "Gráfika", route="/gráficos"),
             self._btn(icon=ft.Icons.CHAT_ROUNDED, label="Consultas" if es else "Wan kaiki", route="/consultas"),
             self._btn(icon=ft.Icons.HISTORY_ROUNDED, label="Historial" if es else "Historia", route="/historia"),
-            self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción" if es else "Predik", route="/predicción"),
+            # self._btn(icon=ft.Icons.TRENDING_UP_ROUNDED, label="Predicción" if es else "Predik", route="/predicción"),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Chatbot" if es else "Chatbot", route="/chat"),
+            self._btn(icon=ft.Icons.SETTINGS_SHARP, label="Chatbot" if es else "Chatbot", route="/chat"),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="Psicologo" if es else "Psikólogo", route="/psicologico", visible=False),
             self._btn(icon=ft.Icons.SMART_TOY_ROUNDED, label="MINSA" if es else "MINSA", route="/InfoMinsa", visible=False),
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=8)
@@ -68,7 +69,7 @@ class Barra_inferior(ft.Container):
     def refresh(self):
         for i, route in enumerate(ROUTES):
             sel = self.app.state.active_route == route
-            color = Tokens.PRIMARY if sel else Tokens.MUTED
+            color = Tokens.PRIMARY_DARK if sel else Tokens.SUBTLE
             col: ft.Column = self._buttons[i].content  # type: ignore
             icon: ft.Icon = col.controls[0]  # type: ignore
             text: ft.Text = col.controls[1]  # type: ignore

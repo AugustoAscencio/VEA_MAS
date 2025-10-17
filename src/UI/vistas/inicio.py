@@ -14,22 +14,23 @@ class Vista_del_panel:
                 [ft.Text("¡Buen día!", **Tokens.H2), ft.Text("Tu próxima cita es hoy a las 15:00", **Tokens.SUB)],
                 spacing=4,
             ),
-            bgcolor=Tokens.PRIMARY_50,
+            bgcolor=Tokens.PRIMARY,
             border_radius=Tokens.RADIUS,
             padding=Rellenar .all(16),
         )
 
         row1 = ft.Row(
             [
-                 Tarjeta_estadistica(icon=ft.Icons.FAVORITE, color=Tokens.OK, title="Estado General", chip="Sin riesgos", value="Bueno"),
-                 Tarjeta_estadistica(icon=ft.Icons.MONITOR_HEART, color=ft.Colors.BLUE_600, title="Frecuencia", chip="74 BPM", value="Normal"),
+                 Tarjeta_estadistica(icon=ft.Icons.FAVORITE, color=Tokens.BORDER, title="Estado General", chip="Sin riesgos", value="Bueno"),
+                 # Tarjeta_estadistica(icon=ft.Image(src="../../assets/heart.png"), color=Tokens.OK, title="Estado General", chip="Sin riesgos", value="Bueno"),
+                 Tarjeta_estadistica(icon=ft.Icons.MONITOR_HEART, color=Tokens.BORDER, title="Frecuencia", chip="74 BPM", value="Normal"),
             ],
             spacing=12,
         )
         row2 = ft.Row(
             [
-                 Tarjeta_estadistica(icon=ft.Icons.WARNING, color=Tokens.WARN, title="Riesgo PA", chip="Alta", value="Medio"),
-                 Tarjeta_estadistica(icon=ft.Icons.CALENDAR_TODAY, color=ft.Colors.DEEP_PURPLE, title="Próx. Cita", chip="15:00", value="Hoy"),
+                 Tarjeta_estadistica(icon=ft.Icons.WARNING, color=Tokens.BORDER, title="Riesgo PA", chip="Alta", value="Medio"),
+                 Tarjeta_estadistica(icon=ft.Icons.CALENDAR_TODAY, color=Tokens.BORDER, title="Próx. Cita", chip="15:00", value="Hoy"),
             ],
             spacing=12,
         )
@@ -37,15 +38,15 @@ class Vista_del_panel:
         quick_title = ft.Text("Acciones Rápidas", **Tokens.H2)
         quick1 = ft.Row(
             [
-                Tarjeta_de_accion(icon=ft.Icons.PSYCHOLOGY, color=ft.Colors.DEEP_PURPLE, title="Análisis IA", subtitle="Síntomas", on_click=lambda _: self.app.go("/chat")),
-                Tarjeta_de_accion(icon=ft.Icons.VIDEO_CALL, color=ft.Colors.BLUE_600, title="Consulta Virtual", subtitle="Especialistas"),
+                Tarjeta_de_accion(icon=ft.Icons.PSYCHOLOGY, color=Tokens.BORDER, title="Análisis IA", subtitle="Síntomas", on_click=lambda _: self.app.go("/chat")),
+                Tarjeta_de_accion(icon=ft.Icons.VIDEO_CALL, color=Tokens.BORDER, title="Consulta Virtual", subtitle="Especialistas"),
             ],
             spacing=12,
         )
         quick2 = ft.Row(
             [
-                Tarjeta_de_accion(icon=ft.Icons.MONITOR_HEART, color=Tokens.OK, title="Monitoreo", subtitle="Signos vitales"),
-                Tarjeta_de_accion(icon=ft.Icons.EMERGENCY, color=Tokens.DANGER, title="Emergencia", subtitle="SOS"),
+                Tarjeta_de_accion(icon=ft.Icons.MONITOR_HEART, color=Tokens.BORDER, title="Monitoreo", subtitle="Signos vitales"),
+                Tarjeta_de_accion(icon=ft.Icons.EMERGENCY, color=Tokens.BORDER, title="Emergencia", subtitle="SOS"),
             ],
             spacing=12,
         )
@@ -79,14 +80,14 @@ class Vista_del_panel:
             [
                 Tarjeta_de_accion(
                     icon=ft.Icons.SELF_IMPROVEMENT,
-                    color=ft.Colors.PURPLE_400,
+                    color=Tokens.BORDER,
                     title="Asistente Psicológico",
                     subtitle="Apoyo emocional",
                     on_click=lambda _: self.app.go("/psicologico"),
                 ),
                 Tarjeta_de_accion(
                     icon=ft.Icons.MEDICAL_SERVICES,
-                    color=ft.Colors.AMBER_800,
+                    color=Tokens.BORDER,
                     title="Ministerio de Salud de Nicaragua",
                     subtitle="MINSA",
                     on_click=lambda _: self.app.go("/InfoMinsa"),
@@ -98,8 +99,8 @@ class Vista_del_panel:
         recent_title = ft.Text("Actividad Reciente", **Tokens.H2)
         recent = ft.Column(
             [
-                Tarjeta_de_lista(icon=ft.Icons.FAVORITE, color=Tokens.OK, title="Presión registrada", subtitle="121/81 · Hace 2 h"),
-                Tarjeta_de_lista(icon=ft.Icons.CHAT, color=ft.Colors.BLUE_600, title="Consulta virtual", subtitle="Dra. López · Ayer"),
+                Tarjeta_de_lista(icon=ft.Icons.FAVORITE, color=Tokens.BORDER, title="Presión registrada", subtitle="121/81 · Hace 2 h"),
+                Tarjeta_de_lista(icon=ft.Icons.CHAT, color=Tokens.BORDER, title="Consulta virtual", subtitle="Dra. López · Ayer"),
             ],
             spacing=12,
         )
